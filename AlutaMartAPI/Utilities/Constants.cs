@@ -8,9 +8,6 @@ public static class Constants
         $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};Pooling=false;Timeout=300;CommandTimeout=300";
 
    
-    public static string OpenAISecretKey => Environment.GetEnvironmentVariable("OPEN_AI_SECRETE_KEY");
-    public static string OpenAIBaseUrl => Environment.GetEnvironmentVariable("OPEN_AI_BASE_URL");
-
     public static string AWSSecreteKey => Environment.GetEnvironmentVariable("AWS_SECRETE_KEY");
     public static string AWSClientId => Environment.GetEnvironmentVariable("AWS_CLIENT_ID");
     public static string AWSS3Bucket => Environment.GetEnvironmentVariable("AWS_S3_BUCKET_NAME");
