@@ -10,6 +10,14 @@ namespace AlutaMartAPI.Services
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IResponseService, ResponseService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IMemoryCacheService, MemoryCacheService>();
+
+
+            services.AddTransient<IBaseHttpClient, BaseHttpClient>();
+            services.AddTransient<INotificationService, NotificationService>();
+            services.AddTransient<IMailSenderService, MailSenderService>();
+
             services.AddMemoryCache();
 
             services.AddResponseCompression(options =>
