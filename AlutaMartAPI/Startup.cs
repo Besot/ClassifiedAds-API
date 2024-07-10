@@ -77,7 +77,7 @@ public class Startup
 	{
 		app.UseExceptionHandler(logger);
 		app.UseRouting();
-		app.UseSentryTracing();
+		// app.UseSentryTracing();
 		app.UseCors("CoresPolicy");
 		app.UseAuthentication();
 		app.UseAuthorization();
@@ -104,7 +104,7 @@ public class Startup
 		});
 
 		app.UseEndpoints(endpoints => endpoints.MapControllers());
-		app.InitializeDatabase();
-		app.SeedDataToDatabase();
+		// app.InitializeDatabase();
+		// app.SeedDataToDatabase();
 	}
 }
