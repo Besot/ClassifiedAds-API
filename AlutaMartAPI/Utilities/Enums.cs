@@ -5,14 +5,23 @@ namespace AlutaMartAPI.Utilities;
 
 public enum Roles
 {
-	[Display(Name ="Admin")]
-	Admin = 1,
+	[Display(Name ="Super Admin")]
+	SuperAdmin = 1,
 
 	[Display(Name ="Vendor")]
 	Vendor,
 
 	[Display(Name ="Buyer")]
-	Buyer
+	Buyer,
+
+	[Display(Name ="Admin User")]
+	AdminUser,
+
+	[Display(Name ="Business Manager")]
+	BusinessManager,
+
+	[Display(Name ="Platform Manager")]
+	PlatformManager
 }
 
 public enum TokenType
@@ -39,16 +48,28 @@ public enum AdsDetailType
 	Prerequisite
 }
 
-public enum QuizType
+public enum AdsCondition
 {
-	[Display(Name = "Pre-Class")]
-	PreClass = 1,
+    [Display(Name = "Brand New")]
+    BrandNew = 1,
 
-	[Display(Name = "In-Class")]
-	InClass,
+    [Display(Name = "Like New")]
+    LikeNew,
 
-	[Display(Name = "Post-Class")]
-	PostClass
+    [Display(Name = "Refurbished")]
+    Refurbished,
+
+    [Display(Name = "Gently Used")]
+    GentlyUsed,
+
+    [Display(Name = "Fairly Used")]
+    FairlyUsed,
+
+    [Display(Name = "Heavily Used")]
+    HeavilyUsed,
+
+    [Display(Name = "For Parts or Not Working")]
+    ForPartsOrNotWorking
 }
 
 public enum AdsType

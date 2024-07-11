@@ -37,4 +37,29 @@ public class NotificationService(IWebHostEnvironment webHostEnvironment, IMailSe
 
 		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email, "Email Verification");
 	}
+
+	public async Task SetPasswordEmailAsync(string email, string firstName, Roles adminRole, string token)
+    {
+        var fullPath = Path.Combine(_webHostEnv.WebRootPath, "set_password_email.html");
+		var htmlMessage = File.ReadAllText(fullPath);
+		htmlMessage = htmlMessage.Replace("{{firstName}}", firstName.ToTitleCase());
+		htmlMessage = htmlMessage.Replace("{{role}}", adminRole.Name());
+		htmlMessage = htmlMessage.Replace("{{code}}", token);
+		htmlMessage = htmlMessage.Replace("{{frontendBaseUrl}}", Constants.AdminFrontendBaseUrl);
+
+
+		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email, $"{adminRole.Name()} Account Password");
+	}
+
+	public async Task SetPasswordSuccessEmailAsync(string email, string firstName, Roles role)
+    {
+        var fullPath = Path.Combine(_webHostEnv.WebRootPath, "set_password_success_email.html");
+		var htmlMessage = File.ReadAllText(fullPath);
+		htmlMessage = htmlMessage.Replace("{{firstName}}", firstName.ToTitleCase());
+		htmlMessage = htmlMessage.Replace("{{role}}", role.Name());
+		htmlMessage = htmlMessage.Replace("{{frontendBaseUrl}}", Constants.AdminFrontendBaseUrl);
+
+
+		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email, "Account Updated Successfully");
+	}
 }

@@ -50,7 +50,7 @@ namespace AlutaMartAPI.Services;
 
 	public async Task<ServiceResponse<string>> SeedAdminAsync()
 	{
-		var isAdminExist = await _unitOfWork.Context.Profiles.AnyAsync(x => x.Role == Roles.Admin);
+		var isAdminExist = await _unitOfWork.Context.Profiles.AnyAsync(x => x.Role == Roles.SuperAdmin);
 		if(isAdminExist)
 		{
 			_logger.LogInformation("system admin user already exist");
@@ -69,7 +69,7 @@ namespace AlutaMartAPI.Services;
 			UserName = normalizedEmail,
 			Created = date, Modified = date,
 			PhoneNumberConfirmed = true,
-			Role = Roles.Admin,
+			Role = Roles.SuperAdmin,
 			Token = 0,
 			IsActive = true
 		};
@@ -231,5 +231,36 @@ namespace AlutaMartAPI.Services;
 
 		await _unitOfWork.Context.Database.ExecuteSqlRawAsync(ProfileSQL.VerifyUserAccount, new NpgsqlParameter("@token", token));
 		return _responseService.SuccessResponse("User account verified successfully...");
+	}
+
+	public async Task<ServiceResponse<string>> SetPasswordAsync(int token, SetPasswordDTO model)
+	{
+		if(token.ToString().Length != 9) return _responseService.ErrorResponse<string>("Invalid token");
+
+		var profile = await _userManager.Users.Where(x => x.Token == token).FirstOrDefaultAsync();
+		if (profile is null) return _responseService.ErrorResponse<string>("Invalid token");
+
+		if ((DateTime.UtcNow - profile.TokenResetTime.Value).TotalMinutes > 1440) return _responseService.ErrorResponse<string>("Link has expired");
+
+		List<string> passwordErrors = new List<string>();
+
+		foreach (IPasswordValidator<Profile> passwordValidator in _userManager.PasswordValidators)
+		{
+			var checkResult = await passwordValidator.ValidateAsync(_userManager, profile, model.Password);
+			if (!checkResult.Succeeded) passwordErrors.AddRange(checkResult.Errors.Select(x => x.Description));
+		}
+
+		if (passwordErrors.Count > 0) return _responseService.ErrorResponse<string>(string.Join(",", passwordErrors));
+
+		var resetToken = await _userManager.GeneratePasswordResetTokenAsync(profile);
+		var passwordChangeResult = await _userManager.ResetPasswordAsync(profile, resetToken, model.ConfirmPassword);
+
+		if (!passwordChangeResult.Succeeded) return _responseService.ErrorResponse<string>(string.Join(",", passwordChangeResult.Errors.Select(x => x.Description)));
+
+		await _unitOfWork.Context.Database.ExecuteSqlRawAsync(ProfileSQL.DeleteToken, new NpgsqlParameter("@id", profile.Id));
+
+		_notificationService.SetPasswordSuccessEmailAsync(profile.Email, profile.FirstName, profile.Role).Forget();
+
+		return _responseService.SuccessResponse("Password created successfully.");
 	}
 }

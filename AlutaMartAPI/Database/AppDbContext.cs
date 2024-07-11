@@ -46,7 +46,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 		modelBuilder.Entity<Ads>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsCategory>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsDetail>().HasQueryFilter(p => !p.IsDeleted);
-		modelBuilder.Entity<CourseSession>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<AdsSession>().HasQueryFilter(p => !p.IsDeleted);
 
 		modelBuilder.Entity<Currency>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<Vendor>().HasQueryFilter(p => !p.IsDeleted);
@@ -59,6 +59,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 		modelBuilder.Entity<AdsReceipt>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<WaitingUser>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<BuyerInterestedInstitution>().HasQueryFilter(p => !p.IsDeleted);
+
 
 		#endregion
 	}

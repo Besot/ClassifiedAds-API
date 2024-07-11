@@ -7,11 +7,11 @@ public class Ads :BaseEntity
     public double Amount { get; set; }
     public string SubTitle { get; set; }
     public string Description { get; set; }
-    public string CourseImageUrl { get; set; }
+    public string AdsImageUrl { get; set; }
+    public AdsType AdsType { get; set; }
+    public AdsCondition AdsCondition { get; set; }
     
-    public AdsType CourseType { get; set; }
-    
-    public Guid ExpertId { get; set; }
+    public Guid VendorId { get; set; }
     public virtual Vendor Vendor { get; set; }
 
     public Guid AdsCategoryId { get; set; }
