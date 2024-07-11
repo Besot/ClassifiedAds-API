@@ -8,8 +8,6 @@ public class Ads :BaseEntity
     public string SubTitle { get; set; }
     public string Description { get; set; }
     public string AdsImageUrl { get; set; }
-    public Guid BrandId { get; set; }
-    public virtual Brand Brand { get; set; }
     public AdsType AdsType { get; set; }
     public AdsCondition AdsCondition { get; set; }
     
