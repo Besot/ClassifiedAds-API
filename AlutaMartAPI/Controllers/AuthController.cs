@@ -38,4 +38,9 @@ public class AuthController(IAuthService authService) : BaseController
 	[HttpPost("Create-Password")]
 	[ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
 	public async Task<IActionResult> CreatePassword([FromBody] CreatePasswordDTO model) => Ok(await  authService.CreateNewPasswordAsync(model));
+
+	[HttpPost("Set-Password/{code}")]
+	[ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
+	public async Task<IActionResult> SetPassword(int code, [FromBody] SetPasswordDTO model) => Ok(await  authService.SetPasswordAsync(code, model));
+
 }

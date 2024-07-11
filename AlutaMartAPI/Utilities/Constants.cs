@@ -18,9 +18,13 @@ public static class Constants
     public static string AdminLastName => Environment.GetEnvironmentVariable("ADMIN_LASTNAME");
     public static string AdminPhone => Environment.GetEnvironmentVariable("ADMIN_PHONE");
     public static string AdminEmail => Environment.GetEnvironmentVariable("ADMIN_EMAIL");
+    public static string AdminPassword => Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+
 
     public static string ExpertFrontendBaseUrl => Environment.GetEnvironmentVariable("EXPERT_FRONT_END_BASE_URL");
     public static string LearnerFrontendBaseUrl => Environment.GetEnvironmentVariable("LEARNER_FRONT_END_BASE_URL");
+    public static string AdminFrontendBaseUrl => Environment.GetEnvironmentVariable("ADMIN_FRONT_END_BASE_URL");
+
 
 
     public static bool IsProduction => Environment.GetEnvironmentVariable("ENVIRONMENT").Equals("production", StringComparison.CurrentCultureIgnoreCase);

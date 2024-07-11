@@ -1,0 +1,153 @@
+"ambrose alli university",aau,edo
+"igbinedion university",iuo,edo
+"benson idahosa university",biu,edo
+"western delta university",wdu,edo
+"edo university iyamho",eui,edo
+"auchi polytechnic",auchi,edo
+"federal polytechnic, auchi",fpa,edo
+"adekunle ajasin university",aaua,ondo
+"federal university of technology, akure",futa,ondo
+"elizade university",elizade,ondo
+"wesley university",wesley,ondo
+"ondo state university of science and technology",osustech,ondo
+"rufus giwa polytechnic",rugipo,ondo
+"abia state university",absu,abia
+"michael okpara university of agriculture",mouau,abia
+"rhema university",rhu,abia
+"gregory university",greguni,abia
+"abia state polytechnic",abiapoly,abia
+"afe babalola university",abuad,ekiti
+"federal university, oye-ekiti",fuoye,ekiti
+"ekiti state university",eksu,ekiti
+"crown polytechnic",crown,ekiti
+"college of education, ikere-ekiti",coeikere,ekiti
+"federal university of technology, owerri",futo,imo
+"imo state university",imsu,imo
+"eastern palm university",epu,imo
+"alvan ikoku federal college of education",aifce,imo
+"federal polytechnic, nekede",fedpolynekede,imo
+"nnamdi azikiwe university",unizik,anambra
+"chukwuemeka odumegwu ojukwu university",coou,anambra
+"madonna university",madonna,anambra
+"paul university",paul,anambra
+"tansian university",tansian,anambra
+"anambra state polytechnic",anspoly,anambra
+"bayero university kano",buk,kano
+"federal university, dutse",fud,jigawa
+"northwest university",nwu,kano
+"kano university of science and technology",kust,kano
+"nigerian police academy",npa,kano
+"sa'adatu rimi college of education",srcoe,kano
+"university of lagos",unilag,lagos
+"lagos state university",lasu,lagos
+"yaba college of technology",yabatech,lagos
+"pan-atlantic university",pau,lagos
+"lagos state polytechnic",laspotech,lagos
+"caleb university",caleb,lagos
+"university of nigeria, nsukka",unn,enugu
+"enugu state university of science and technology",esut,enugu
+"caritas university",caritas,enugu
+"renaissance university",renaissance,enugu
+"godfrey okoye university",gouni,enugu
+"institute of management and technology, enugu",imt,enugu
+"obafemi awolowo university",oau,osun
+"osun state university",uniosun,osun
+"federal polytechnic, ede",fpe,osun
+"kings university",kingsuni,osun
+"bowen university",bu,osun
+"joseph ayo babalola university",jabu,osun
+"university of ibadan",ui,oyo
+"ladoke akintola university of technology",lautech,oyo
+"ajayi crowther university",acu,oyo
+"the polytechnic, ibadan",ibadanpoly,oyo
+"lead city university",lcu,oyo
+"federal college of education (special), oyo",fceoyo,oyo
+"covenant university",cu,ogun
+"federal university of agriculture, abeokuta",funaab,ogun
+"moshood abiola polytechnic",mapoly,ogun
+"tai solarin university of education",tasued,ogun
+"olabisi onabanjo university",oou,ogun
+"chrisland university",chrisland,ogun
+"university of port harcourt",uniport,rivers
+"rivers state university",rsu,rivers
+"ignatius ajuru university of education",iaue,rivers
+"kenule beeson saro-wiwa polytechnic",kenpoly,rivers
+"pamo university of medical sciences",pums,rivers
+"captain elechi amadi polytechnic",ceap,rivers
+"university of jos",unijos,plateau
+"plateau state university",plasu,plateau
+"federal college of education, pankshin",fcepankshin,plateau
+"college of education, gindiri",coegindiri,plateau
+"bokkos college of education",bokkoscoe,plateau
+"university of calabar",unical,cross river
+"cross river university of technology",crutech,cross river
+"federal college of education, obudu",fceobudu,cross river
+"arthur jarvis university",aju,cross river
+"college of health technology, calabar",cohtecal,cross river
+"obong university",obongu,akwa ibom
+"akwa ibom state university",aksu,akwa ibom
+"heritage polytechnic",heritage,akwa ibom
+"college of education, afaha nsit",coeafit,akwa ibom
+"uyo city polytechnic",uyopoly,akwa ibom
+"federal university, kashere",fuk,gombe
+"gombe state university",gsu,gombe
+"college of education, billiri",coebilliri,gombe
+"federal college of education, gombe",fcegombe,gombe
+"university of maiduguri",unimaid,borno
+"borno state university",bosu,borno
+"ramat polytechnic",ramatpoly,borno
+"federal polytechnic, mubi",fpmubi,adamawa
+"federal university, lafia",fulafia,nasarawa
+"nasarawa state university",nsuk,nasarawa
+"nasarawa state polytechnic",naspoly,nasarawa
+"federal university of lafia, keffi campus",fulkeffi,nasarawa
+"federal university of technology, minna",futminna,niger
+"ibrahim badamasi babangida university",ibbu,niger
+"federal polytechnic, bida",bidapoly,niger
+"niger state college of education, minna",coeminna,niger
+"federal university of technology, yola",futy,adamawa
+"adamawa state university",adsu,adamawa
+"college of education, hong",coehong,adamawa
+"college of legal and islamic studies, yola",colis,adamawa
+"federal university, dutsin-ma",fudma,katsina
+"umaru musa yar'adua university",umyu,katsina
+"isa kaita college of education, dutsin-ma",ikcoedma,katsina
+"federal college of education, katsina",fcekatsina,katsina
+"federal university, birnin kebbi",fubk,kebbi
+"kebbi state university of science and technology",ksusta,kebbi
+"jega college of education, kebbi",jcoek,kebbi
+"waziri umaru federal polytechnic, birnin kebbi",wufpbk,kebbi
+"anambra state university",ansu,anambra
+"austica memorial college of education",amcoe,anambra
+"ezuegwu memorial college of education, onitsha",emcoe,anambra
+"federal university, gusau",fugus,zamfara
+"zamfara state university",zsu,zamfara
+"zamfara state college of education, maru",zscem,zamfara
+"zamfara college of arts and sciences, gusau",zcasg,zamfara
+"federal university, wukari",fuwukari,taraba
+"taraba state university",tsu,taraba
+"taraba state college of agriculture, jalingo",tscaj,taraba
+"taraba state college of education, zing",tscez,taraba
+"sule lamido university",slu,jigawa
+"jigawa state college of education, gumel",jsceg,jigawa
+"jigawa state institute of information technology, kazaure",jsiitk,jigawa
+"federal university, gashua",fugashua,yobe
+"yobe state university",ysu,yobe
+"yobe state college of agriculture, gujba",yscag,yobe
+"yobe state college of education, potiskum",yscoept,yobe
+"university of ilorin",unilorin,kwara
+"kwara state university",kwasu,kwara
+"kwara state college of education, oro",ksceor,kwara
+"kwara state college of health technology, offa",kschto,kwara
+"kogi state university",ksu,kogi
+"kogi state polytechnic",ksp,kogi
+"college of education, ankpa",coeankpa,kogi
+"kogi state college of health sciences and technology, idah",kschst,kogi
+"nile university of nigeria",nun,fct
+"baze university",bu,fct
+"african university of science and technology",aust,fct
+"national open university of nigeria",noun,fct
+"veritas university",vuna,fct
+"nigerian turkish nile university",ntnu,fct
+"federal polytechnic, nasarawa",fedpolynas,fct
+"federal college of education, zaria",fcez,fct

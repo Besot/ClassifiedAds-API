@@ -72,12 +72,14 @@ namespace AlutaMartAPI.Database
             }
         }
 
-        public static void SeedDataToDatabase(this IApplicationBuilder app)
+        public static async Task SeedDataToDatabase(this IApplicationBuilder app)
         {
             var scopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
             using var scope = scopeFactory.CreateScope();
 
             using var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Profile>>();
+
 
             if(!context.Currencies.Any()) context.AddRange(DataSeed.GetCurrencies());   
 
@@ -86,10 +88,15 @@ namespace AlutaMartAPI.Database
             if(!context.AdsCategories.Any()) context.AddRange(DataSeed.GetAdsCategories());
 
             if(!context.PlanTiers.Any()) context.AddRange(DataSeed.GetPlanTiers());
+            
+            if (!context.Profiles.Any())
+                {
+                    var superAdmins = await DataSeed.GetSuperAdmin(userManager);
+                    context.AddRange(superAdmins);
+                }
 
-            context.SaveChanges();
-            context.Dispose();
+                        context.SaveChanges();
+                        context.Dispose();
         }
-
     }
 }

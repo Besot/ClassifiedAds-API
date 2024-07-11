@@ -11,4 +11,6 @@ namespace AlutaMartAPI.Services;
     Task<ServiceResponse<string>> SeedAdminAsync();
     Task<ServiceResponse<string>> ResendEmailVerificationAsync(UserDTO user, bool isLearner = false);
     Task<ServiceResponse<string>> VerifiyAccountAsync(int token);
+    Task<ServiceResponse<string>> SetPasswordAsync(int token, SetPasswordDTO model);
+
     }
