@@ -36,49 +36,43 @@ public enum AccessType
 	Block
 }
 
-public enum AdsDetailType
-{
-	[Display(Name = "Brand")]
-	Brand = 1,
-
-	[Display(Name = "")]
-	LearnerDiscovery,
-
-	[Display(Name = "Prerequisite")]
-	Prerequisite
-}
-
 public enum AdsCondition
 {
     [Display(Name = "Brand New")]
     BrandNew = 1,
 
-    [Display(Name = "Like New")]
-    LikeNew,
-
     [Display(Name = "Refurbished")]
     Refurbished,
 
-    [Display(Name = "Gently Used")]
-    GentlyUsed,
-
-    [Display(Name = "Fairly Used")]
-    FairlyUsed,
-
-    [Display(Name = "Heavily Used")]
-    HeavilyUsed,
-
-    [Display(Name = "For Parts or Not Working")]
-    ForPartsOrNotWorking
+    [Display(Name = "Used")]
+    Used
 }
 
-public enum AdsType
+public enum Discount
 {
 	[Display(Name = "Discounted")]
 	Discounted = 1,
 
 	[Display(Name = "Fixed-Price")]
 	FixedPrice,
+}
+
+public enum AdsType
+{
+	[Display(Name = "For Sale")]
+	ForSale = 1,
+
+	[Display(Name = "For Rent")]
+	ForRent,
+
+	[Display(Name = "Services")]
+	Services,
+
+	[Display(Name = "Jobs")]
+	Jobs,
+
+	[Display(Name = "Campus Politics")]
+	CampusPolitics
 }
 
 
@@ -117,17 +111,17 @@ public enum Level
 
 }
 
-public enum CareerGoal
-{
-	[Display(Name = "Enter a new field")]
-	EnterANewField = 1,
+public enum AdsStatus
+    {
+        [Display(Name = "Active")]
+        Active = 1,
 
-	[Display(Name = "Advance in my field")]
-	AdvanceInMyField,
+        [Display(Name = "Inactive")]
+        Inactive,
 
-	[Display(Name = "Become a manager in my field")]
-	BecomeAManagerInMyfield,
+        [Display(Name = "Sold")]
+        Sold,
 
-	[Display(Name = "Advance as a manager")]
-	AdvanceAsAManager
-}
+        [Display(Name = "Expired")]
+        Expired
+    }

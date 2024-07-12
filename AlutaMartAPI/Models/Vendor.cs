@@ -20,4 +20,6 @@ namespace AlutaMartAPI.Models;
 
         public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
+        public decimal Rating { get; set; }
+        public int NumberOfReviews { get; set; }
     }
