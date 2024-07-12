@@ -9,7 +9,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public virtual DbSet<Profile> Profiles { get; set; }
 	public virtual DbSet<Ads> Ads { get; set; }
 	public virtual DbSet<AdsCategory> AdsCategories { get; set; }
-	public virtual DbSet<AdsDetail> AdsDetails { get; set; } 
 	public virtual DbSet<Currency> Currencies { get; set; }
 	public virtual DbSet<Vendor> Vendors { get; set; }
 	public virtual DbSet<VendorInstitution> VendorInstitutions { get; set; }
@@ -45,9 +44,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
 		modelBuilder.Entity<Ads>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsCategory>().HasQueryFilter(p => !p.IsDeleted);
-		modelBuilder.Entity<AdsDetail>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsSession>().HasQueryFilter(p => !p.IsDeleted);
-
 		modelBuilder.Entity<Currency>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<Vendor>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<VendorInstitution>().HasQueryFilter(p => !p.IsDeleted);
