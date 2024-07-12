@@ -3,5 +3,4 @@ namespace AlutaMartAPI.Models;
     {
         public string Name { get; set; }
         public string Brand { get; set; }
-
     }
