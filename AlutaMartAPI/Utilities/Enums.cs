@@ -77,19 +77,14 @@ public enum AdsType
 
 
 
-public enum ApprovalStatus
+public enum VerificationStatus
 {
 	[Display(Name = "None")]
-	NotStarted = 1,
+	NotVerify= 1,
 
-	[Display(Name = "Pending Approval")]
-	PendingApproval,
+	[Display(Name = "Verified")]
+	Verified
 
-	[Display(Name = "Declined")]
-	Declined,
-
-	[Display(Name = "Approved")]
-	Approved
 }
 
 public enum Level
@@ -107,7 +102,10 @@ public enum Level
 	YearFour,
 
 	[Display(Name = "500L")]
-	YearFive
+	YearFive,
+	[Display(Name = "Graduate")]
+	Graduate
+
 
 }
 
