@@ -23,7 +23,7 @@ namespace AlutaMartAPI.DTOs;
 	    [MinLength(20, ErrorMessage ="Vendor's ProfileUrl link should not be less than 20 characters")]
         public string ProfilePictureUrl { get; set; }
 
-        public Guid? VendorInstitutionId { get; set; }
+        public Guid? InstitutionId { get; set; }
 
         [Required(ErrorMessage ="Academic Level is required")]
         [Range(1, 6, ErrorMessage ="Level value should be between 1 and 6")]

@@ -10,11 +10,14 @@ namespace AlutaMartAPI.Services
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IResponseService, ResponseService>();
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMemoryCacheService, MemoryCacheService>();
+
+            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IVendorService, VendorService>();
+            services.AddScoped<IAdsCategoryService, AdsCategoryService>();
+            services.AddScoped<ICurrencyService, CurrencyService>();
+            services.AddScoped<IInstitutionService, InstitutionService>();
 
 
             services.AddTransient<IBaseHttpClient, BaseHttpClient>();

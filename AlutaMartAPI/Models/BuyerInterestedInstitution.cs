@@ -7,6 +7,6 @@ namespace AlutaMartAPI.Models;
         public Guid BuyerId { get; set; }
         public virtual Buyer Buyer { get; set; }
         
-        public Guid VendorInstitutionId { get; set; }
-        public virtual VendorInstitution VendorInstitution { get; set; }
+        public Guid InstitutionId { get; set; }
+        public virtual Institution Institution { get; set; }
     }

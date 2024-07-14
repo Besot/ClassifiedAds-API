@@ -18,7 +18,7 @@ namespace AlutaMartAPI.Controllers;
         [ProducesResponseType(type: typeof(ServiceResponse<GetVendorDTO>), statusCode: 200)]
         public async Task<IActionResult> GetDetails(Guid vendorId) => Ok(await _vendorService.GetDetailsAsync(vendorId));
 
-        [HttpDelete("Delete-Expert/{profileId}"), AccessControl([Roles.AdminUser, Roles.SuperAdmin], AccessType.Allow)]
+        [HttpDelete("Delete/{profileId}"), AccessControl([Roles.AdminUser, Roles.SuperAdmin], AccessType.Allow)]
         [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
         public async Task<IActionResult> DeleteVendor(Guid profileId)  => Ok(await _vendorService.DeleteVendorAsync(profileId));
     }

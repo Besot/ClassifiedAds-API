@@ -83,7 +83,7 @@ namespace AlutaMartAPI.Database
 
             if(!context.Currencies.Any()) context.AddRange(DataSeed.GetCurrencies());   
 
-            if(!context.VendorInstitutions.Any()) context.AddRange(DataSeed.GetVendorInstitutions());
+            if(!context.Institutions.Any()) context.AddRange(DataSeed.GetInstitutions());
 
             if(!context.AdsCategories.Any()) context.AddRange(DataSeed.GetAdsCategories());
 

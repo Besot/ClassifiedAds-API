@@ -11,7 +11,7 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
 {
     public async Task<ServiceResponse<string>> CreateAsync(CreateVendorDTO model, UserDTO user)
     {
-        if(model.VendorInstitutionId == null || !model.VendorInstitutionId.HasValue) return _responseService.ErrorResponse<string>("Vendor's institution is required");
+        if(model.InstitutionId == null || !model.InstitutionId.HasValue) return _responseService.ErrorResponse<string>("Vendor's institution is required");
 
         var isAlreadyVendor = await _unitOfWork.Context.Vendors.AnyAsync(x => x.ProfileId == user.Id);
         if(isAlreadyVendor) 
@@ -20,13 +20,13 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
             return _responseService.SuccessResponse("User is already a vendor");
         }
 
-        var validInstitution = await _unitOfWork.Context.VendorInstitutions.AnyAsync(x => x.Id == model.VendorInstitutionId.Value);
+        var validInstitution = await _unitOfWork.Context.Institutions.AnyAsync(x => x.Id == model.InstitutionId.Value);
         if(!validInstitution) return _responseService.ErrorResponse<string>("Invalid request");
 
         var vendor = new Vendor
         {
             ProfileId = user.Id,
-            VendorInstitutionId = model.VendorInstitutionId.Value,
+            InstitutionId = model.InstitutionId.Value,
             ProfilePictureUrl = model.ProfilePictureUrl.ToLower(),
             Department = model.Department.ToLower(),
             FacebookUrl = model.FacebookUrl.ToLower(),
@@ -64,7 +64,7 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
                 FullName = $"{x.Profile.FirstName} {x.Profile.LastName}",
                 Email = x.Profile.Email,
                 Role = x.Profile.Role,
-                VendorInstitutionId = x.VendorInstitutionId,
+                VendorInstitutionId = x.InstitutionId,
                 AcademicLevel = x.AcademicLevel,
                 TotalAds = _unitOfWork.Context.Ads.Count(c => c.VendorId == x.Id),
                 ProfilePictureUrl = x.ProfilePictureUrl
@@ -84,7 +84,7 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
                 Email = x.Profile.Email,
                 Bio = x.Bio,
                 Role = x.Profile.Role,
-                VendorInstitutionId = x.VendorInstitutionId,
+                VendorInstitutionId = x.InstitutionId,
                 VerificationStatus = x.VerificationStatus,
                 Department = x.Department,
                 AcademicLevel = x.AcademicLevel,
