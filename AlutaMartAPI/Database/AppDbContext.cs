@@ -19,7 +19,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
 	public virtual DbSet<IdentityCard> IdentityCards { get; set; }
 	public virtual DbSet<AdsReceipt> AdsReceipts { get; set; }
-
+	public virtual DbSet<VendorReview> VendorReviews { get; set; }
 
 	public virtual DbSet<WaitingUser> WaitingUsers { get; set; }
 
@@ -45,15 +45,18 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 		modelBuilder.Entity<Ads>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsCategory>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsSession>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<AdsReceipt>().HasQueryFilter(p => !p.IsDeleted);
+
 		modelBuilder.Entity<Currency>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<Vendor>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<VendorInstitution>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<VendorReview>().HasQueryFilter(p => !p.IsDeleted);
+
 
 		modelBuilder.Entity<Buyer>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AddedToCart>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<PlanTier>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<IdentityCard>().HasQueryFilter(p => !p.IsDeleted);
-		modelBuilder.Entity<AdsReceipt>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<WaitingUser>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<BuyerInterestedInstitution>().HasQueryFilter(p => !p.IsDeleted);
 

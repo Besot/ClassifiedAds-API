@@ -62,4 +62,14 @@ public class NotificationService(IWebHostEnvironment webHostEnvironment, IMailSe
 
 		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email, "Account Updated Successfully");
 	}
+
+	public async Task VendorOnboardingEmailAsync(string email, string firstName)
+	{
+		var fullPath = Path.Combine(_webHostEnv.WebRootPath, "vendor_onboarding_email.html");
+		var htmlMessage = File.ReadAllText(fullPath);
+		htmlMessage = htmlMessage.Replace("{{firstName}}", firstName.ToTitleCase());
+		htmlMessage = htmlMessage.Replace("{{frontendBaseUrl}}", Constants.ExpertFrontendBaseUrl);
+
+		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email, "Welcome to AlutaMart as a Vendor!");
+	}
 }
