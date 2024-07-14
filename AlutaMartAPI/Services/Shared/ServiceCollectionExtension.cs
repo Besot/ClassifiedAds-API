@@ -14,6 +14,7 @@ namespace AlutaMartAPI.Services
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMemoryCacheService, MemoryCacheService>();
             services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IVendorService, VendorService>();
 
 
             services.AddTransient<IBaseHttpClient, BaseHttpClient>();
