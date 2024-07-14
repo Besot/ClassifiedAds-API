@@ -85,6 +85,7 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
                 Bio = x.Bio,
                 Role = x.Profile.Role,
                 VendorInstitutionId = x.VendorInstitutionId,
+                VerificationStatus = x.VerificationStatus,
                 Department = x.Department,
                 AcademicLevel = x.AcademicLevel,
                 TotalAds = _unitOfWork.Context.Ads.Count(c => c.VendorId == x.Id),

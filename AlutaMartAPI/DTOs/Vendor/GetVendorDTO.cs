@@ -6,6 +6,7 @@ namespace AlutaMartAPI.DTOs;
         public string FullName { get; set; }
         public string Email { get; set; }
         public Roles Role { get; set; }
+        public VerificationStatus VerificationStatus { get; set; }
         public string Department { get; set; }
         public string Bio { get; set; }   
         public string InstaUrl { get; set; }
