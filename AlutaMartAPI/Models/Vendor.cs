@@ -12,8 +12,8 @@ namespace AlutaMartAPI.Models;
         public string XUrl { get; set; }
         public string FacebookUrl { get; set; }
         public string ProfilePictureUrl { get; set; }
-        public Guid VendorInstitutionId { get; set; }
-        public virtual VendorInstitution VendorInstitution { get; set; }
+        public Guid InstitutionId { get; set; }
+        public virtual Institution VendorInstitution { get; set; }
         public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
         public decimal Rating { get; set; }

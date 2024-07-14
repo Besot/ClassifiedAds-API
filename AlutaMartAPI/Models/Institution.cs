@@ -1,5 +1,5 @@
 namespace AlutaMartAPI.Models;
-    public class VendorInstitution : BaseEntity
+    public class Institution : BaseEntity
     {
     public string Name { get; set; }
     public string Abbrev { get; set; }

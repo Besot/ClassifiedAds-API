@@ -45,7 +45,7 @@ public static class Constants
 
     public static string CurrencyCacheKey => "currency";
     public static string AdsCategoryCacheKey => "adsCategory";
-    public static string VendorInstitutionCacheKey => "vendorInstitution";
+    public static string InstitutionCacheKey => "Institution";
 
     public static string GoogleClientId => Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
     public static string GoogleClientSecrete => Environment.GetEnvironmentVariable("GOOGLE_SECRETE_KEY");

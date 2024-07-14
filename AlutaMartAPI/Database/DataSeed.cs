@@ -23,14 +23,14 @@ namespace AlutaMartAPI.Database;
         }
 
 
-        public static IEnumerable<VendorInstitution> GetVendorInstitutions()
+        public static IEnumerable<Institution> GetInstitutions()
         {
-            var records = new List<VendorInstitution>();
+            var records = new List<Institution>();
             var fullPath = Path.Combine(_webHostEnv.WebRootPath, "institutions.csv");
             using (var reader = new StreamReader(fullPath))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                records = csv.GetRecords<VendorInstitution>().ToList();
+                records = csv.GetRecords<Institution>().ToList();
             }
 
             return records;
