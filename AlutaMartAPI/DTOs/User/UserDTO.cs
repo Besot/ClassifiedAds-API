@@ -15,5 +15,5 @@ public class  UserDTO
 	public string LastName { get; set; }
 	public Roles Access { get; set; }
 	public string AccessName => Access.Name();
-	public Guid? ExpertId { get; set; }
+	public Guid? VendorId { get; set; }
 }

@@ -63,6 +63,7 @@ namespace AlutaMartAPI.Services;
 		{
 			FirstName = Constants.AdminFirstName,
 			LastName = Constants.AdminLastName,
+			ProfilePictureUrl = "https://pather-bucket.s3.eu-central-1.amazonaws.com/57aca2a0-32d8-4b05-8541-c776cdf81a1f.png",
 			Email = normalizedEmail,
 			EmailConfirmed = true,
 			PhoneNumber = Constants.AdminPhone,
@@ -82,7 +83,7 @@ namespace AlutaMartAPI.Services;
 				.Select(x => x.Description)));
 		}
 
-		var addPasswordResp = await _userManager.AddPasswordAsync(user, $"Aa{Guid.NewGuid}@@");
+		var addPasswordResp = await _userManager.AddPasswordAsync(user, Constants.AdminPassword);
 		if(!addPasswordResp.Succeeded)
 		{
 			return _responseService.ErrorResponse<string>(string.Join(",",addPasswordResp

@@ -1,8 +1,7 @@
-using Microsoft.EntityFrameworkCore.Metadata;
-
-namespace AlutaMartAPI.Models;
-    public class PlanTier : BaseEntity
+namespace AlutaMartAPI.DTOs;
+    public class GetPlanTierDTO
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public double Amount { get; set; }
         public int MaxAds { get; set; }

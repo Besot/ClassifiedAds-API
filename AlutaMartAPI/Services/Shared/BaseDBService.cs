@@ -80,11 +80,11 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
 			var vendor = await _unitOfWork.Context.Vendors
 				.AsNoTracking()
 				.Where(x => x.ProfileId == model.Id)
-				.Select(x => new { x.Id, x.ProfilePictureUrl })
+				.Select(x => new { x.Id, x.VendorPictureUrl })
 				.FirstOrDefaultAsync();
 			
-			profile.ProfilePicUrl = vendor.ProfilePictureUrl;
-			profile.ExpertId = vendor.Id;
+			profile.ProfilePicUrl = vendor.VendorPictureUrl;
+			profile.VendorId = vendor.Id;
 			
 		}
 

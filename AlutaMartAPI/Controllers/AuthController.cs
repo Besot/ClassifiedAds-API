@@ -13,7 +13,7 @@ public class AuthController(IAuthService authService) : BaseController
 	public async Task<IActionResult> EmailLogin([FromBody] EmailLoginDTO model) => Ok(await  authService.EmailLoginAsync(model));
 
 	[HttpGet("Seed-Admin")]
-	[ApiExplorerSettings(IgnoreApi = true)]
+	[ApiExplorerSettings(IgnoreApi = false)]
 	[ProducesResponseType(type: typeof(ServiceResponse<TokenResponseDTO>), statusCode: 200)]
 	public async Task<IActionResult> SeedAdmin() => Ok(await  authService.SeedAdminAsync());
 

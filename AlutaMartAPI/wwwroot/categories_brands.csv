@@ -1,116 +1,121 @@
-phones,iphone
-phones,samsung
-phones,google
-phones,oneplus
-phones,xiaomi
-phones,huawei
-phones,oppo
-phones,vivo
-phones,realme
-phones,motorola
-phones,tecno
-phones,infinix
-phones,itel
-phones,xiaomi
-phones,huawei
-phones,nokia
-phones,gionee
-phones,zte
-phones,accessories
-phones,google
-electronics,sony
-electronics,lg
-electronics,panasonic
-electronics,philips
-electronics,samsung
-electronics,bose
-electronics,jbl
-electronics,sharp
-electronics,toshiba
-electronics,haier thermocool
-electronics,games
-electronics,scanfrost
-electronics,hisense
-electronics,polystar
-electronics,skyrun
-electronics,nexus
-electronics,maxi
-electronics,century
-electronics,zealot
-confectionery,food & snacks
-fashion,creams
-fashion,clothings
-fashion,perfumes & deordorants
-fashion,hairs
-fashion,jewelries
-fashion,sport wears
-fashion,baby products
-vehicles,toyota
-vehicles,honda
-vehicles,ford
-vehicles,chevrolet
-vehicles,nissan
-vehicles,bmw
-vehicles,mercedes-benz
-vehicles,volkswagen
-vehicles,audi
-vehicles,kia
-vehicles,lexus
-vehicles,gac
-vehicles,innoson
-vehicles,suzuki
-vehicles,acura
-vehicles,landrover
-vehicles,hyundai
-vehicles,bike
-books,fiction
-books,non-fiction
-books,children's
-books,educational
-books,romance
-books,fantasy
-books,mystery
-books,horror
-laptops,apple
-laptops,dell
-laptops,hp
-laptops,lenovo
-laptops,asus
-laptops,acer
-laptops,microsoft
-laptops,razer
-laptops,msi
-laptops,samsung
-laptops,lg
-laptops,huawei
-laptops,sony
-laptops,toshiba
-laptops,alienware
-laptops,google
-laptops,gigabyte
-laptops,panasonic
-laptops,fujitsu
-laptops,vaio
-laptops,chuwi
-laptops,xiaomi
-laptops,honor
-laptops,dynabook
-laptops,system76
-laptops,eurocom
-services,arts and creativity
-services,legal services
-services,repair services
-services,catering services
-services,cleaning services
-services,laundry services
-services,beauty & spar
-services,event planning & hosting
-services,tickets & vouchers
-services,photo & videography
-services,accommodations
-services,transport
-services,freelancing
-furnitures,chairs
-furnitures,tables
-furnitures,mattresses
-furnitures,rugs
+Name,Brand,Code
+phones,iphone,phn1
+phones,samsung,phn2
+phones,google,phn3
+phones,oneplus,phn4
+phones,xiaomi,phn5
+phones,huawei,phn6
+phones,oppo,phn7
+phones,vivo,phn8
+phones,realme,phn9
+phones,motorola,phn10
+phones,tecno,phn11
+phones,infinix,phn12
+phones,itel,phn13
+phones,xiaomi,phn14
+phones,huawei,phn15
+phones,nokia,phn16
+phones,gionee,phn17
+phones,zte,phn18
+phones,accessories,phn19
+phones,google,phn20
+electronics,sony,elec1
+electronics,lg,elec2
+electronics,panasonic,elec3
+electronics,philips,elec4
+electronics,samsung,elec5
+electronics,bose,elec6
+electronics,jbl,elec7
+electronics,sharp,elec8
+electronics,toshiba,elec9
+electronics,haier thermocool,elec10
+electronics,games,elec11
+electronics,scanfrost,elec12
+electronics,hisense,elec13
+electronics,polystar,elec14
+electronics,skyrun,elec15
+electronics,nexus,elec16
+electronics,maxi,elec17
+electronics,century,elec18
+electronics,zealot,elec19
+confectionery,food & snacks,conf1
+fashion,creams & toiletries,fash1
+fashion,clothing material,fash2
+fashion,perfumes & deordorants,fash3
+fashion,hairs,fash4
+fashion,jewelries,fash5
+fashion,sport wears,fash6
+fashion,baby products,fash7
+fashion,male wears,fash8
+fashion,female wears,fash9
+vehicles,toyota,veh1
+vehicles,honda,veh2
+vehicles,ford,veh3
+vehicles,chevrolet,veh4
+vehicles,nissan,veh5
+vehicles,bmw,veh6
+vehicles,mercedes-benz,veh7
+vehicles,volkswagen,veh8
+vehicles,audi,veh9
+vehicles,kia,veh10
+vehicles,lexus,veh11
+vehicles,gac,veh12
+vehicles,innoson,veh13
+vehicles,suzuki,veh14
+vehicles,acura,veh15
+vehicles,landrover,veh16
+vehicles,hyundai,veh17
+vehicles,bike,veh18
+books,fiction,book1
+books,non-fiction,book2
+books,children's,book3
+books,educational,book4
+books,romance,book5
+books,fantasy,book6
+books,mystery,book7
+books,horror,book8
+laptops,apple,laptop1
+laptops,dell,laptop2
+laptops,hp,laptop3
+laptops,lenovo,laptop4
+laptops,asus,laptop5
+laptops,acer,laptop6
+laptops,microsoft,laptop7
+laptops,razer,laptop8
+laptops,msi,laptop9
+laptops,samsung,laptop10
+laptops,lg,laptop11
+laptops,huawei,laptop12
+laptops,sony,laptop13
+laptops,toshiba,laptop14
+laptops,alienware,laptop15
+laptops,google,laptop16
+laptops,gigabyte,laptop17
+laptops,panasonic,laptop18
+laptops,fujitsu,laptop19
+laptops,vaio,laptop20
+laptops,chuwi,laptop21
+laptops,xiaomi,laptop22
+laptops,honor,laptop23
+laptops,dynabook,laptop24
+laptops,system76,laptop25
+laptops,eurocom,laptop26
+services,arts and creativity,serv1
+services,legal services,serv2
+services, building & repair,serv3
+services,catering services,serv4
+services,cleaning services,serv5
+services,laundry services,serv6
+services,beauty & spar,serv7
+services,event planning & hosting,serv8
+services,tickets & vouchers,serv9
+services,photo & videography,serv10
+services,accommodations,serv11
+services,transport,serv12
+services,freelancing,serv13
+services,tailoring,serv14
+furnitures,chairs,furn1
+furnitures,tables,furn2
+furnitures,mattresses,furn3
+furnitures,rugs,furn4
+furnitures,wordrobes,furn5

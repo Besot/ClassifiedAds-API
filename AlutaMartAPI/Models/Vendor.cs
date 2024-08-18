@@ -5,13 +5,12 @@ namespace AlutaMartAPI.Models;
 
     public class Vendor : BaseEntity
     {
-        public string Department { get; set; }
-
+        public string BrandName { get; set; }
         public string Bio { get; set; } 
         public string InstaUrl { get; set; }
         public string XUrl { get; set; }
         public string FacebookUrl { get; set; }
-        public string ProfilePictureUrl { get; set; }
+        public string VendorPictureUrl { get; set; }
         public Guid InstitutionId { get; set; }
         public virtual Institution VendorInstitution { get; set; }
         public Guid ProfileId { get; set; }
@@ -19,5 +18,7 @@ namespace AlutaMartAPI.Models;
         public decimal Rating { get; set; }
         public long NumberOfReviews { get; set; }
         public VerificationStatus VerificationStatus { get; set; }
-        public Level AcademicLevel { get; set; }
+        public IdentityCard NIN { get; set; }
+        public Guid PlanTierId { get; set; }
+        public virtual PlanTier PlanTier { get; set; }
     }

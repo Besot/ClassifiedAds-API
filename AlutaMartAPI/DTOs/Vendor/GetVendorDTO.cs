@@ -1,8 +1,10 @@
+using AlutaMartAPI.Models;
 using AlutaMartAPI.Utilities;
 
 namespace AlutaMartAPI.DTOs;
     public class GetVendorDTO
     {
+        public string BrandName { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
         public Roles Role { get; set; }
@@ -14,8 +16,10 @@ namespace AlutaMartAPI.DTOs;
         public string FacebookUrl { get; set; }
         public string ProfilePictureUrl { get; set; }
         public Guid? VendorInstitutionId { get; set; }
-        public Level AcademicLevel { get; set; }
-        public int TotalAds { get; set; }
+        public IdentityCard NIN { get; set; }
+        public long TotalAds { get; set; }
+        public long NumberOfReviews { get; set; }
+        public decimal Rating { get; set; }
         public List<GetVendorReviewDTO> VendorReview { get; set; }
 
     }

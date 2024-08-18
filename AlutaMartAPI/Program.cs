@@ -24,12 +24,6 @@ public static class Program
                     p.AllowSynchronousIO = true;
                 });
                 webBuilder.UseUrls("http://*:1993");
-                // webBuilder.UseSentry(o =>
-                // {
-                //     o.Dsn = Constants.SentryKey;
-                //     o.Debug = false;
-                //     o.TracesSampleRate = 1.0;
-                // });
                 webBuilder.UseStartup<Startup>();
             });
     }
