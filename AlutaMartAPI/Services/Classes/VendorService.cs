@@ -23,21 +23,31 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
         var validInstitution = await _unitOfWork.Context.Institutions.AnyAsync(x => x.Id == model.InstitutionId.Value);
         if(!validInstitution) return _responseService.ErrorResponse<string>("Invalid request");
 
+        if (!Guid.TryParse(Constants.PlanTierFreePlanId, out Guid planTierId))return _responseService.ErrorResponse<string>("Invalid PlanTierId format");
+
+
         var vendor = new Vendor
         {
             ProfileId = user.Id,
             InstitutionId = model.InstitutionId.Value,
-            ProfilePictureUrl = model.ProfilePictureUrl.ToLower(),
-            Department = model.Department.ToLower(),
+            PlanTierId = planTierId,
+            VendorPictureUrl = model.ProfilePictureUrl.ToLower(),
+            BrandName = model.BrandName.ToLower(),
             FacebookUrl = model.FacebookUrl.ToLower(),
             XUrl = model.XUrl.ToLower(),
             InstaUrl = model.InstaUrl.ToLower(),
             Bio =model.Bio.ToLower(),
             VerificationStatus = VerificationStatus.NotVerify,
-            AcademicLevel = model.AcademicLevel
         };
 
         await _unitOfWork.Context.AddAsync(vendor);
+
+        var nin = new IdentityCard
+        {
+            ProfileId = user.Id,
+            NIN = model.NIN
+        };
+        await _unitOfWork.Context.IdentityCards.AddAsync(nin);
         await _unitOfWork.CommitAsync();
 
         await _unitOfWork.Context.Database.ExecuteSqlRawAsync(ProfileSQL.SetAsVendor, new NpgsqlParameter("@id", user.Id));
@@ -57,20 +67,20 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
     }
     public async Task<ServiceResponse<PagedList<GetVendorDTO>>> GetAsync(int page = 1, int pageSize = 15)
     {   
-        var experts = _unitOfWork.Context.Vendors
+        var vendors = _unitOfWork.Context.Vendors
             .AsNoTracking()
             .Select(x => new GetVendorDTO
             {
+                BrandName = x.BrandName,
                 FullName = $"{x.Profile.FirstName} {x.Profile.LastName}",
                 Email = x.Profile.Email,
                 Role = x.Profile.Role,
                 VendorInstitutionId = x.InstitutionId,
-                AcademicLevel = x.AcademicLevel,
                 TotalAds = _unitOfWork.Context.Ads.Count(c => c.VendorId == x.Id),
-                ProfilePictureUrl = x.ProfilePictureUrl
+                ProfilePictureUrl = x.VendorPictureUrl
             });
 
-        return await _responseService.PagedResponseAsync(experts, page, pageSize, "Vendors");
+        return await _responseService.PagedResponseAsync(vendors, page, pageSize, "Vendors");
     }
 
     public async Task<ServiceResponse<GetVendorDTO>> GetDetailsAsync(Guid vendorId)
@@ -81,15 +91,16 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
             .Select(x => new GetVendorDTO
             {
                 FullName = $"{x.Profile.FirstName} {x.Profile.LastName}",
+                BrandName = x.BrandName,
                 Email = x.Profile.Email,
                 Bio = x.Bio,
                 Role = x.Profile.Role,
                 VendorInstitutionId = x.InstitutionId,
                 VerificationStatus = x.VerificationStatus,
-                Department = x.Department,
-                AcademicLevel = x.AcademicLevel,
-                TotalAds = _unitOfWork.Context.Ads.Count(c => c.VendorId == x.Id),
-                ProfilePictureUrl = x.ProfilePictureUrl,
+                NIN = x.NIN,
+                TotalAds = _unitOfWork.Context.Ads.Count(c => c.VendorId == vendorId),
+                NumberOfReviews = _unitOfWork.Context.Reviews.Count(c => c.VendorId == vendorId),
+                ProfilePictureUrl = x.VendorPictureUrl,
                 XUrl = x.XUrl,
                 FacebookUrl = x.FacebookUrl,
                 InstaUrl = x.InstaUrl
@@ -97,14 +108,17 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
 
             if(vendor is null) return _responseService.ErrorResponse<GetVendorDTO>("Invalid request");
 
-            vendor.VendorReview = await _unitOfWork.Context.VendorReviews
+            vendor.VendorReview = await _unitOfWork.Context.Reviews
             .AsNoTracking()
             .Where(x => x.VendorId == vendorId)
             .Select(x => new GetVendorReviewDTO
             {
                 ReviewId = x.Id,
                 ReviewerName = $"{x.Buyer.Profile.FirstName} {x.Buyer.Profile.LastName}",
-                Review = x.Review
+                Review = x.Content,
+                ReviewerPicture = x.Buyer.Profile.ProfilePictureUrl,
+                ReviewDate = x.Modified,
+                Edited = x.Modified != x.Created
             })
             .ToListAsync();
 
