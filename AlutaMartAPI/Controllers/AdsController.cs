@@ -24,4 +24,9 @@ namespace AlutaMartAPI.Controllers;
         [HttpGet("Details/{adId}"), AllowAnonymous]
         [ProducesResponseType(type: typeof(ServiceResponse<GetAdDetailsDTO>), statusCode: 200)]
         public async Task<IActionResult> GetDetails(Guid adId) => Ok(await adsService.GetDetailsAsync(adId, CurrentUser));
+
+        [HttpGet("Search"), AllowAnonymous]
+        [ProducesResponseType(type: typeof(ServiceResponse<PagedList<GetAdsDTO>>), statusCode: 200)]
+        public async Task<IActionResult> SearchAds(string searchQuery = "", Guid? adsCategoryId = null, int page = 1, int pageSize = 20, bool? isFree = null)
+            => Ok(await adsService.SearchAsync(searchQuery, adsCategoryId, page, pageSize, isFree));
     }

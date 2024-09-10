@@ -198,4 +198,47 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
 
         return _responseService.SuccessResponse(ad);
     }
+
+    public async Task<ServiceResponse<PagedList<GetAdsDTO>>> SearchAsync(string searchQuery, Guid? adsCategoryId, int page, int pageSize, bool? isFree)
+    {
+        var adsQuery = _unitOfWork.Context.Ads
+            .AsNoTracking()
+            .OrderByDescending(x => x.Created)
+            .Select(x => new GetAdsDTO
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                BrandName =  x.Vendor.BrandName,
+                VendorImage = x.Vendor.VendorPictureUrl,
+                Amount = x.Amount,
+                DiscountPrice = x.DiscountPrice,
+                AdsImageUrl = _unitOfWork.Context.AdsImages
+                    .Where(x => x.AdsId == x.Id)
+                    .Select(x => x.ImageUrl)
+                    .ToList(),                
+                ExpiryDate = x.ExpiryDate,
+                Status = x.Status,
+                IsFeatured = x.IsFeatured,
+                AdsType = x.AdsType,
+                AdsCondition = x.AdsCondition,
+                NumberOfReviews = x.NumberOfReviews,
+                VendorId = x.VendorId,
+                AdsCategoryId = x.AdsCategoryId,
+                CurrencyId = x.CurrencyId,
+                Discount = x.Discount
+            });
+
+        if(isFree is not null && isFree.Value) adsQuery = adsQuery.Where(x => x.Amount == 0);
+        
+        if(isFree is not null && !isFree.Value) adsQuery = adsQuery.Where(x => x.Amount > 0);
+        
+        adsQuery = adsCategoryId == Guid.Empty || adsCategoryId == null ? adsQuery : 
+            adsQuery.Where(x => x.AdsCategoryId == adsCategoryId.Value);
+
+        adsQuery = string.IsNullOrEmpty(searchQuery) ? adsQuery :
+            adsQuery.Where(x => x.Title.Contains(searchQuery) || x.Description.Contains(searchQuery));
+
+        return await _responseService.PagedResponseAsync(adsQuery, page, pageSize, "Ads");
+    }
 }
