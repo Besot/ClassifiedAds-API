@@ -11,4 +11,8 @@ namespace AlutaMartAPI.Controllers;
         public async Task<IActionResult> CreateAds([FromBody] CreateAdsDTO model) 
             => Ok(await adsService.CreateAdsAsync(model, CurrentUser));
 
+        [HttpGet]
+        [ProducesResponseType(type: typeof(ServiceResponse<PagedList<GetAdsDTO>>), statusCode: 200)]
+        public async Task<IActionResult> GetAds(int page = 1, int pageSize = 15) => Ok(await adsService.GetAsync( page, pageSize));
+
     }
