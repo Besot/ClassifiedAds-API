@@ -112,4 +112,35 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
         return await _responseService.PagedResponseAsync(ads, page, pageSize, "Ads");
     }
 
+     public async Task<ServiceResponse<PagedList<GetAdsDTO>>> GetByVendorIdAsync(Guid vendorId, int page = 1, int pageSize = 10)
+    {
+        var ads = _unitOfWork.Context.Ads
+            .AsNoTracking()
+            .OrderByDescending(x => x.Modified)
+            .Where(x => x.VendorId == vendorId)
+            .Select(x => new GetAdsDTO
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                BrandName =  x.Vendor.BrandName,
+                VendorImage = x.Vendor.VendorPictureUrl,
+                Amount = x.Amount,
+                DiscountPrice = x.DiscountPrice,
+                AdsImageUrl = x.AdsImageUrl,
+                ExpiryDate = x.ExpiryDate,
+                Status = x.Status,
+                IsFeatured = x.IsFeatured,
+                AdsType = x.AdsType,
+                AdsCondition = x.AdsCondition,
+                NumberOfReviews = x.NumberOfReviews,
+                VendorId = x.VendorId,
+                AdsCategoryId = x.AdsCategoryId,
+                CurrencyId = x.CurrencyId,
+                Discount = x.Discount
+            });
+        
+        return await _responseService.PagedResponseAsync(ads, page, pageSize, "Courses");
+    }
+
 }
