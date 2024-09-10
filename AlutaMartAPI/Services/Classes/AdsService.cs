@@ -97,7 +97,10 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 VendorImage = x.Vendor.VendorPictureUrl,
                 Amount = x.Amount,
                 DiscountPrice = x.DiscountPrice,
-                AdsImageUrl = x.AdsImageUrl,
+                AdsImageUrl = _unitOfWork.Context.AdsImages
+                    .Where(x => x.AdsId == x.Id)
+                    .Select(x => x.ImageUrl)
+                    .ToList(),
                 ExpiryDate = x.ExpiryDate,
                 Status = x.Status,
                 IsFeatured = x.IsFeatured,
@@ -127,7 +130,10 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 VendorImage = x.Vendor.VendorPictureUrl,
                 Amount = x.Amount,
                 DiscountPrice = x.DiscountPrice,
-                AdsImageUrl = x.AdsImageUrl,
+                AdsImageUrl = _unitOfWork.Context.AdsImages
+                    .Where(x => x.AdsId == x.Id)
+                    .Select(x => x.ImageUrl)
+                    .ToList(),                
                 ExpiryDate = x.ExpiryDate,
                 Status = x.Status,
                 IsFeatured = x.IsFeatured,
@@ -140,7 +146,56 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 Discount = x.Discount
             });
         
-        return await _responseService.PagedResponseAsync(ads, page, pageSize, "Courses");
+        return await _responseService.PagedResponseAsync(ads, page, pageSize, "Ads");
     }
 
+    public async Task<ServiceResponse<GetAdDetailsDTO>> GetDetailsAsync(Guid adId, UserDTO user)
+    {
+        var ad = await _unitOfWork.Context.Ads
+            .AsNoTracking()
+            .Where(x => x.Id == adId)
+            .Select(x => new GetAdDetailsDTO
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                BrandName =  x.Vendor.BrandName,
+                VendorImage = x.Vendor.VendorPictureUrl,
+                Amount = x.Amount,
+                DiscountPrice = x.DiscountPrice,
+                AdsImageUrl = _unitOfWork.Context.AdsImages
+                    .Where(x => x.AdsId == x.Id)
+                    .Select(x => x.ImageUrl)
+                    .ToList(),                
+                ExpiryDate = x.ExpiryDate,
+                Status = x.Status,
+                IsFeatured = x.IsFeatured,
+                AdsType = x.AdsType,
+                AdsCondition = x.AdsCondition,
+                NumberOfReviews = x.NumberOfReviews,
+                VendorId = x.VendorId,
+                AdsCategoryId = x.AdsCategoryId,
+                CurrencyId = x.CurrencyId,
+                Discount = x.Discount
+            })
+            .FirstOrDefaultAsync();
+        
+        if(ad is null) return _responseService.ErrorResponse<GetAdDetailsDTO>("Invalid request");
+
+        ad.Reviews = await _unitOfWork.Context.Reviews
+            .AsNoTracking()
+            .Where(x => x.AdsId == adId)
+            .Select(x => new GetVendorReviewDTO
+            {
+                ReviewId = x.Id,
+                ReviewerName = $"{x.Buyer.Profile.FirstName} {x.Buyer.Profile.LastName}",
+                Review = x.Content,
+                ReviewerPicture = x.Buyer.Profile.ProfilePictureUrl,
+                ReviewDate = x.Modified,
+                Edited = x.Modified != x.Created
+            })
+            .ToListAsync();
+
+        return _responseService.SuccessResponse(ad);
+    }
 }

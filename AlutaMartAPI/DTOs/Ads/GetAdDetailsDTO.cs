@@ -1,7 +1,7 @@
 using AlutaMartAPI.Utilities;
 
 namespace AlutaMartAPI.DTOs;
-    public class GetAdsDTO
+    public class GetAdDetailsDTO
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
@@ -21,4 +21,6 @@ namespace AlutaMartAPI.DTOs;
         public Guid VendorId { get; set; }
         public Guid AdsCategoryId { get; set; }
         public Guid CurrencyId { get; set; }
+        public List<GetVendorReviewDTO> Reviews { get; set; }
+
     }

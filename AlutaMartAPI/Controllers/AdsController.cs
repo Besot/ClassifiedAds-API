@@ -1,6 +1,7 @@
 using AlutaMartAPI.DTOs;
 using AlutaMartAPI.Services;
 using AlutaMartAPI.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlutaMartAPI.Controllers;
@@ -11,7 +12,7 @@ namespace AlutaMartAPI.Controllers;
         public async Task<IActionResult> CreateAds([FromBody] CreateAdsDTO model) 
             => Ok(await adsService.CreateAdsAsync(model, CurrentUser));
 
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         [ProducesResponseType(type: typeof(ServiceResponse<PagedList<GetAdsDTO>>), statusCode: 200)]
         public async Task<IActionResult> GetAds(int page = 1, int pageSize = 15) => Ok(await adsService.GetAsync( page, pageSize));
 
@@ -20,4 +21,7 @@ namespace AlutaMartAPI.Controllers;
         public async Task<IActionResult> GetAdByVendor(int page = 1, int pageSize = 20) 
             => Ok(await adsService.GetByVendorIdAsync(CurrentUser.VendorId.Value, page, pageSize));
 
+        [HttpGet("Details/{adId}"), AllowAnonymous]
+        [ProducesResponseType(type: typeof(ServiceResponse<GetAdDetailsDTO>), statusCode: 200)]
+        public async Task<IActionResult> GetDetails(Guid adId) => Ok(await adsService.GetDetailsAsync(adId, CurrentUser));
     }
