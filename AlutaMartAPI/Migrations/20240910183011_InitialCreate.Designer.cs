@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ALUTAMARTAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240818090448_InitialCreate")]
+    [Migration("20240910183011_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -83,14 +83,8 @@ namespace ALUTAMARTAPI.Migrations
                     b.Property<int>("AdsCondition")
                         .HasColumnType("integer");
 
-                    b.Property<string>("AdsImageUrl")
-                        .HasColumnType("text");
-
                     b.Property<int>("AdsType")
                         .HasColumnType("integer");
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("double precision");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -127,6 +121,9 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.Property<long>("NumberOfReviews")
                         .HasColumnType("bigint");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
