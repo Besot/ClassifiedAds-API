@@ -29,4 +29,10 @@ namespace AlutaMartAPI.Controllers;
         [ProducesResponseType(type: typeof(ServiceResponse<PagedList<GetAdsDTO>>), statusCode: 200)]
         public async Task<IActionResult> SearchAds(string searchQuery = "", Guid? adsCategoryId = null, int page = 1, int pageSize = 20, bool? isFree = null)
             => Ok(await adsService.SearchAsync(searchQuery, adsCategoryId, page, pageSize, isFree));
+
+        [HttpPut("Update-Ads/{adId}"), AllowAccess(Roles.Vendor)]
+        [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
+        public async Task<IActionResult> UpdateAd([FromRoute] Guid adId, [FromBody] CreateAdsDTO model)
+            => Ok(await adsService.UpdateAdAsync(adId, model, CurrentUser));
+
     }

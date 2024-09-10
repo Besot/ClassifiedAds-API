@@ -80,14 +80,8 @@ namespace ALUTAMARTAPI.Migrations
                     b.Property<int>("AdsCondition")
                         .HasColumnType("integer");
 
-                    b.Property<string>("AdsImageUrl")
-                        .HasColumnType("text");
-
                     b.Property<int>("AdsType")
                         .HasColumnType("integer");
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("double precision");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -124,6 +118,9 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.Property<long>("NumberOfReviews")
                         .HasColumnType("bigint");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

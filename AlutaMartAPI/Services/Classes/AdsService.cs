@@ -1,8 +1,10 @@
 using AlutaMartAPI.Database;
 using AlutaMartAPI.DTOs;
 using AlutaMartAPI.Models;
+using AlutaMartAPI.SQLQueries;
 using AlutaMartAPI.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace AlutaMartAPI.Services;
 public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseService) : BaseDBService(_unitOfWork, _responseService), IAdsService
@@ -21,7 +23,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             return _responseService.ErrorResponse<string>("Ads category is required");
 
         // Validate image URL
-        if (!model.AdsImageUrl.Contains("s3.eu-central-1.amazonaws.com"))
+        if (!model.AdsImageUrls.Contains("s3.eu-central-1.amazonaws.com"))
             return _responseService.ErrorResponse<string>("Invalid image URL");
 
         // Fetch vendor, plan tier, currency, and ads category in one go
@@ -48,7 +50,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
         if (adsCount >= vendor.PlanTier.MaxAds)
             return _responseService.ErrorResponse<string>("Ad creation limit reached for the current plan tier");
 
-        var imageCount = model.AdsImageUrl.ToList().Count;
+        var imageCount = model.AdsImageUrls.ToList().Count;
         if (imageCount > vendor.PlanTier.MaxPicture)
             return _responseService.ErrorResponse<string>("Number of pictures exceeds the maximum allowed for your plan tier");
 
@@ -60,7 +62,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             {
                 Title = model.Title,
                 Description = model.Description,
-                Amount = model.Price,
+                Price = model.Price,
                 DiscountPrice = model.DiscountPrice,
                 AdsType = model.AdsType,
                 VendorId = user.VendorId.Value,
@@ -72,7 +74,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             await _unitOfWork.Context.AddAsync(ad);
             var images = new List<AdsImage>();
 
-        images.AddRange(model.AdsImageUrl.Select(x => new AdsImage
+        images.AddRange(model.AdsImageUrls.Select(x => new AdsImage
         {
             ImageUrl = x,
             AdsId = ad.Id
@@ -95,7 +97,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 Description = x.Description,
                 BrandName =  x.Vendor.BrandName,
                 VendorImage = x.Vendor.VendorPictureUrl,
-                Amount = x.Amount,
+                Price = x.Price,
                 DiscountPrice = x.DiscountPrice,
                 AdsImageUrl = _unitOfWork.Context.AdsImages
                     .Where(x => x.AdsId == x.Id)
@@ -128,7 +130,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 Description = x.Description,
                 BrandName =  x.Vendor.BrandName,
                 VendorImage = x.Vendor.VendorPictureUrl,
-                Amount = x.Amount,
+                Price = x.Price,
                 DiscountPrice = x.DiscountPrice,
                 AdsImageUrl = _unitOfWork.Context.AdsImages
                     .Where(x => x.AdsId == x.Id)
@@ -161,7 +163,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 Description = x.Description,
                 BrandName =  x.Vendor.BrandName,
                 VendorImage = x.Vendor.VendorPictureUrl,
-                Amount = x.Amount,
+                Price = x.Price,
                 DiscountPrice = x.DiscountPrice,
                 AdsImageUrl = _unitOfWork.Context.AdsImages
                     .Where(x => x.AdsId == x.Id)
@@ -211,7 +213,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 Description = x.Description,
                 BrandName =  x.Vendor.BrandName,
                 VendorImage = x.Vendor.VendorPictureUrl,
-                Amount = x.Amount,
+                Price = x.Price,
                 DiscountPrice = x.DiscountPrice,
                 AdsImageUrl = _unitOfWork.Context.AdsImages
                     .Where(x => x.AdsId == x.Id)
@@ -229,9 +231,9 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 Discount = x.Discount
             });
 
-        if(isFree is not null && isFree.Value) adsQuery = adsQuery.Where(x => x.Amount == 0);
+        if(isFree is not null && isFree.Value) adsQuery = adsQuery.Where(x => x.Price == 0);
         
-        if(isFree is not null && !isFree.Value) adsQuery = adsQuery.Where(x => x.Amount > 0);
+        if(isFree is not null && !isFree.Value) adsQuery = adsQuery.Where(x => x.Price > 0);
         
         adsQuery = adsCategoryId == Guid.Empty || adsCategoryId == null ? adsQuery : 
             adsQuery.Where(x => x.AdsCategoryId == adsCategoryId.Value);
@@ -240,5 +242,83 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             adsQuery.Where(x => x.Title.Contains(searchQuery) || x.Description.Contains(searchQuery));
 
         return await _responseService.PagedResponseAsync(adsQuery, page, pageSize, "Ads");
+    }
+
+    public async Task<ServiceResponse<string>> UpdateAdAsync(Guid adId, CreateAdsDTO model, UserDTO user)
+    {
+        if(user.VendorId == Guid.Empty || user.VendorId == null) return _responseService.ErrorResponse<string>("Invalid vendor request");
+
+        var adVendorId = await _unitOfWork.Context.Ads.AsNoTracking().Where(x => x.Id == adId).Select(x => x.VendorId).FirstOrDefaultAsync();
+        if(user.VendorId != adVendorId) return _responseService.ErrorResponse<string>("Unauthorized request");
+
+        if(model.AdsImageUrls == null || model.AdsImageUrls.Count <= 0) return _responseService.ErrorResponse<string>("Image is required");
+       
+        if(model.CurrencyId == Guid.Empty || !model.CurrencyId.HasValue) return _responseService.ErrorResponse<string>("currency type is required");
+
+        if(model.AdsCategoryId == Guid.Empty || !model.AdsCategoryId.HasValue) 
+            return _responseService.ErrorResponse<string>("Ad category is required");
+
+        var adExists = await _unitOfWork.Context.Ads.AnyAsync(x => x.Id == adId);
+        if(!adExists) return _responseService.ErrorResponse<string>("Invalid Ad");
+
+        var isValidCategory = await _unitOfWork.Context.AdsCategories.AnyAsync(x => x.Id == model.AdsCategoryId.Value);
+        if(!isValidCategory) return _responseService.ErrorResponse<string>("Select a valid category");
+
+        var isValidCurrency = await _unitOfWork.Context.Currencies.AnyAsync(x => x.Id == model.CurrencyId.Value);
+        if(!isValidCurrency) return _responseService.ErrorResponse<string>("Select a valid currency");
+
+        var parameters = new List<object>
+        {
+            new NpgsqlParameter("@title", model.Title),
+            new NpgsqlParameter("@description", model.Description),
+            new NpgsqlParameter("@price", model.Price),
+            new NpgsqlParameter("@discountPrice", model.DiscountPrice),
+            new NpgsqlParameter("@isFeatured", model.IsFeatured),
+            new NpgsqlParameter("@adsType", model.AdsType),
+            new NpgsqlParameter("@adsCondition", model.AdsCondition),
+            new NpgsqlParameter("@adsCategoryId", model.AdsCategoryId),
+            new NpgsqlParameter("@currencyId", model.CurrencyId)
+        };
+
+        await _unitOfWork.Context.Database.ExecuteSqlRawAsync(AdSQL.UpdateAd, parameters);
+
+
+        var existingAdImages = await _unitOfWork.Context.AdsImages
+                .AsNoTracking()
+                .Where(x => x.AdsId == adId)
+                .Select(x => x.ImageUrl)
+                .ToListAsync();
+
+            var newAdImages = model.AdsImageUrls
+            .Except(existingAdImages)
+            .Select(url => new AdsImage
+            {
+                AdsId = adId,
+                ImageUrl = url,
+            }).ToList();
+
+            var outdatedImages = existingAdImages.Except(model.AdsImageUrls).ToList();
+           
+            if (newAdImages.Count > 0)
+            {
+                await _unitOfWork.Context.AdsImages.AddRangeAsync(newAdImages);
+            }
+
+            if (outdatedImages.Count > 0)
+            {
+                var deleteParameters = new List<object> 
+                { 
+                    new NpgsqlParameter("@adsId", adId) 
+                };
+                deleteParameters.AddRange(outdatedImages.Select((id, index) => new NpgsqlParameter($"@id{index}", id)));
+
+                var deleteQuery = AdImageSQL.DeleteAdImages
+                .Replace("{adimageIds}", string.Join(", ", outdatedImages.Select((_, index) => $"@id{index}")));
+                
+                await _unitOfWork.Context.Database.ExecuteSqlRawAsync(deleteQuery, deleteParameters);
+            }
+
+            await _unitOfWork.CommitAsync();
+        return _responseService.SuccessResponse("Ad Updated Successfully");
     }
 }

@@ -409,9 +409,8 @@ namespace ALUTAMARTAPI.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    Amount = table.Column<double>(type: "double precision", nullable: false),
+                    Price = table.Column<double>(type: "double precision", nullable: false),
                     DiscountPrice = table.Column<double>(type: "double precision", nullable: false),
-                    AdsImageUrl = table.Column<string>(type: "text", nullable: true),
                     ExpiryDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     IsFeatured = table.Column<bool>(type: "boolean", nullable: false),
@@ -826,20 +825,20 @@ namespace ALUTAMARTAPI.Migrations
             migrationBuilder.DropTable(
                 name: "AdsSession");
 
-            migrationBuilder.DropTable(
-                name: "AspNetRoleClaims");
+            // migrationBuilder.DropTable(
+            //     name: "AspNetRoleClaims");
 
-            migrationBuilder.DropTable(
-                name: "AspNetUserClaims");
+            // migrationBuilder.DropTable(
+            //     name: "AspNetUserClaims");
 
-            migrationBuilder.DropTable(
-                name: "AspNetUserLogins");
+            // migrationBuilder.DropTable(
+            //     name: "AspNetUserLogins");
 
-            migrationBuilder.DropTable(
-                name: "AspNetUserRoles");
+            // migrationBuilder.DropTable(
+            //     name: "AspNetUserRoles");
 
-            migrationBuilder.DropTable(
-                name: "AspNetUserTokens");
+            // migrationBuilder.DropTable(
+            //     name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
                 name: "BuyerInterestedInstitutions");
@@ -850,8 +849,8 @@ namespace ALUTAMARTAPI.Migrations
             migrationBuilder.DropTable(
                 name: "WaitingUsers");
 
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
+            // migrationBuilder.DropTable(
+            //     name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Ads");

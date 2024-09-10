@@ -5,9 +5,8 @@ public class Ads :BaseEntity
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public double Amount { get; set; }
+        public double Price { get; set; }
         public double DiscountPrice { get; set; }
-        public string AdsImageUrl { get; set; }
         public DateTimeOffset? ExpiryDate { get; set; }
 
         public AdsStatus Status { get; set; } = AdsStatus.Active;

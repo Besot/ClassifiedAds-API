@@ -8,7 +8,7 @@ namespace AlutaMartAPI.DTOs;
         public string Description { get; set; }
         public string BrandName { get; set; }
         public string VendorImage { get; set; }
-        public double Amount { get; set; }
+        public double Price { get; set; }
         public double DiscountPrice { get; set; }
         public List<string> AdsImageUrl { get; set; }
         public DateTimeOffset? ExpiryDate { get; set; }

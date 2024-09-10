@@ -22,9 +22,7 @@ namespace AlutaMartAPI.DTOs;
         public double DiscountPrice { get; set; }
 
         [Required(ErrorMessage ="course image url is required")]
-        [MaxLength(100, ErrorMessage ="course image url should not be more than 100 characters")]
-        [MinLength(7, ErrorMessage ="course image url should not be less than 7 characters")]
-        public List<string> AdsImageUrl { get; set; }
+        public List<string> AdsImageUrls { get; set; }
         public bool IsFeatured { get; set; } = false;
 
         [Range(1, 4, ErrorMessage ="roles value should be between 1 and 4")]
