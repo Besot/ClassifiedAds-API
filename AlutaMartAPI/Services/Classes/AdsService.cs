@@ -76,9 +76,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             AdsCondition = model.AdsCondition,
             Status = AdsStatus.Active,
             Discount = model.DiscountPrice != null ? Discount.Discounted : Discount.FixedPrice,
-            ExpiryDate = vendorPlan.PlanTier.Name == "premium tier" ? DateTimeOffset.UtcNow.AddMonths(2) :
-                 vendorPlan.PlanTier.Name == "basic tier" || vendorPlan.PlanTier.Name == "standard tier" ? DateTimeOffset.UtcNow.AddMonths(1) : 
-                 vendorPlan.PlanTier.Name == "free tier" ? null : null
+            FeaturedExpiryDate =  vendorPlan.PlanTier.Name == "free tier" ? null :  DateTimeOffset.UtcNow.AddMonths(1)
         };
             await _unitOfWork.Context.AddAsync(ad);
             var images = new List<AdsImage>();
@@ -99,6 +97,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
     {  
         var ads = _unitOfWork.Context.Ads
             .AsNoTracking()
+            .OrderByDescending(x => x.Modified)
             .Where(x => x.Status == AdsStatus.Active)
             .Select(x => new GetAdsDTO
             {
@@ -113,7 +112,6 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 .Where(x => x.AdsId == x.Id)
                 .Select(x => x.ImageUrl)
                 .FirstOrDefault(),
-                ExpiryDate = x.ExpiryDate,
                 Status = x.Status,
                 IsFeatured = x.IsFeatured,
                 AdsType = x.AdsType,
@@ -176,7 +174,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                     .Where(x => x.AdsId == x.Id)
                     .Select(x => x.ImageUrl)
                     .ToList(),                
-                ExpiryDate = x.ExpiryDate,
+                FeaturedExpiryDate = x.FeaturedExpiryDate,
                 Status = x.Status,
                 IsFeatured = x.IsFeatured,
                 AdsType = x.AdsType,

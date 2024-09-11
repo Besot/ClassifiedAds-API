@@ -12,7 +12,7 @@ namespace AlutaMartAPI.DTOs;
         public int QuantityInStock { get; set; }
         public double DiscountPrice { get; set; }
         public List<string> AdsImageUrl { get; set; }
-        public DateTimeOffset? ExpiryDate { get; set; }
+        public DateTimeOffset? FeaturedExpiryDate { get; set; }
         public AdsStatus Status { get; set; }
         public bool IsFeatured { get; set; } = false;
         public AdsType AdsType { get; set; }
