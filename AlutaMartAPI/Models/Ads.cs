@@ -8,7 +8,7 @@ public class Ads :BaseEntity
         public int QuantityInStock { get; set; }
         public double Price { get; set; }
         public double? DiscountPrice { get; set; }
-        public DateTimeOffset? ExpiryDate { get; set; }
+        public DateTimeOffset? FeaturedExpiryDate { get; set; }
 
         public AdsStatus Status { get; set; } = AdsStatus.Active;
 

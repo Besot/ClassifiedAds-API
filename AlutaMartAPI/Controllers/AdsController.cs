@@ -35,4 +35,10 @@ namespace AlutaMartAPI.Controllers;
         public async Task<IActionResult> UpdateAd([FromRoute] Guid adId, [FromBody] CreateAdsDTO model)
             => Ok(await adsService.UpdateAdAsync(adId, model, CurrentUser));
 
+        [HttpDelete("Delete-Ad/{adId}"), AccessControl([Roles.AdminUser, Roles.Vendor], AccessType.Allow)]
+        [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
+        public async Task<IActionResult> DeleteCourse(Guid adId) 
+            => Ok(await adsService.DeleteAdAsync(adId, CurrentUser.VendorId.Value, CurrentUser.Access == Roles.AdminUser));
+
+
     }

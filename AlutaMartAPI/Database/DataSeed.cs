@@ -31,10 +31,10 @@ namespace AlutaMartAPI.Database
         {
             return
             [
-                new PlanTier { Name = "free tier", Amount = 0, MaxAds = 5, MaxPicture = 1, IsAdVideo = false, MaxFeatured = 0 },
-                new PlanTier { Name = "basic tier", Amount = 500, MaxAds = 12, MaxPicture = 2, IsAdVideo = false, MaxFeatured = 2 },
-                new PlanTier { Name = "standard tier", Amount = 1000, MaxAds = 16, MaxPicture = 3, IsAdVideo = false, MaxFeatured = 5 },
-                new PlanTier { Name = "premium tier", Amount = 1999, MaxAds = 22, MaxPicture = 3, IsAdVideo = true, MaxFeatured = 10 },
+                new PlanTier { Name = "free tier", Amount = 0, MaxAds = 10, MaxPicture = 1, IsAdVideo = false, MaxFeatured = 0 },
+                new PlanTier { Name = "basic tier", Amount = 500, MaxAds = 9999, MaxPicture = 2, IsAdVideo = false, MaxFeatured = 2 },
+                new PlanTier { Name = "standard tier", Amount = 1000, MaxAds = 9999, MaxPicture = 3, IsAdVideo = false, MaxFeatured = 5 },
+                new PlanTier { Name = "premium tier", Amount = 1999, MaxAds = 9999, MaxPicture = 3, IsAdVideo = true, MaxFeatured = 10 },
             ];
         }
 

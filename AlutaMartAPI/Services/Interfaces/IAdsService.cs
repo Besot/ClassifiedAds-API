@@ -10,4 +10,6 @@ public interface IAdsService
     Task<ServiceResponse<GetAdDetailsDTO>> GetDetailsAsync(Guid adId, UserDTO user);
     Task<ServiceResponse<PagedList<GetAdsDTO>>> SearchAsync(string searchQuery, Guid? adsCategoryId, int page, int pageSize, bool? isFree);
     Task<ServiceResponse<string>> UpdateAdAsync(Guid adId, CreateAdsDTO model, UserDTO user);
+    Task<ServiceResponse<string>> DeleteAdAsync(Guid adId, Guid vendorId, bool isAdmin);
+
 }
