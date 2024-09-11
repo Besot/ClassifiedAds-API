@@ -28,13 +28,17 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
 
         // Fetch vendor, plan tier, currency, and ads category in one go
         var vendor = await _unitOfWork.Context.Vendors
-            .Include(v => v.PlanTier)
+            .AsNoTracking()
             .FirstOrDefaultAsync(v => v.Id == user.VendorId.Value);
+
+        var vendorPlan = await _unitOfWork.Context.VendorPlan
+            .AsNoTracking()
+            .FirstOrDefaultAsync(v => v.VendorId == user.VendorId.Value);
 
         var isCurrencyValid = await _unitOfWork.Context.Currencies.AnyAsync(c => c.Id == model.CurrencyId.Value);
         var isAdsCategoryValid = await _unitOfWork.Context.AdsCategories.AnyAsync(ac => ac.Id == model.AdsCategoryId.Value);
 
-        if (vendor == null || vendor.PlanTier == null)
+        if (vendor == null || vendorPlan == null)
             return _responseService.ErrorResponse<string>("Vendor or plan tier not found");
 
         if (!isCurrencyValid)
@@ -44,33 +48,38 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             return _responseService.ErrorResponse<string>("Ads category selected is invalid");
 
         // Retrieve ad counts and validate against plan tier limits
-        var adsCount = await _unitOfWork.Context.Ads.CountAsync(a => a.VendorId == user.VendorId.Value);
-        var featuredAdsCount = await _unitOfWork.Context.Ads.CountAsync(a => a.VendorId == user.VendorId.Value && a.IsFeatured);
+        var adsCount = await _unitOfWork.Context.Ads.CountAsync(a => a.VendorId == user.VendorId.Value && !a.IsDeleted);
+        var featuredAdsCount = await _unitOfWork.Context.Ads.CountAsync(a => a.VendorId == user.VendorId.Value && a.IsFeatured && !a.IsDeleted);
 
-        if (adsCount >= vendor.PlanTier.MaxAds)
+        if (adsCount >= vendorPlan.PlanTier.MaxAds)
             return _responseService.ErrorResponse<string>("Ad creation limit reached for the current plan tier");
 
         var imageCount = model.AdsImageUrls.ToList().Count;
-        if (imageCount > vendor.PlanTier.MaxPicture)
+        if (imageCount > vendorPlan.PlanTier.MaxPicture)
             return _responseService.ErrorResponse<string>("Number of pictures exceeds the maximum allowed for your plan tier");
 
-        if (model.IsFeatured && featuredAdsCount >= vendor.PlanTier.MaxFeatured)
+        if (model.IsFeatured && featuredAdsCount >= vendorPlan.PlanTier.MaxFeatured)
             return _responseService.ErrorResponse<string>("Featured ad limit reached for the current plan tier");
 
-        // Create and save the ad
         var ad = new Ads
-            {
-                Title = model.Title,
-                Description = model.Description,
-                Price = model.Price,
-                DiscountPrice = model.DiscountPrice,
-                AdsType = model.AdsType,
-                VendorId = user.VendorId.Value,
-                AdsCategoryId = model.AdsCategoryId.Value,
-                CurrencyId = model.CurrencyId.Value,
-                IsFeatured = model.IsFeatured,
-                AdsCondition = model.AdsCondition
-            };
+        {
+            Title = model.Title,
+            Description = model.Description,
+            Price = model.Price,
+            QuantityInStock = model.QuantityInStock,
+            DiscountPrice = model.DiscountPrice,
+            AdsType = model.AdsType,
+            VendorId = user.VendorId.Value,
+            AdsCategoryId = model.AdsCategoryId.Value,
+            CurrencyId = model.CurrencyId.Value,
+            IsFeatured = model.IsFeatured,
+            AdsCondition = model.AdsCondition,
+            Status = AdsStatus.Active,
+            Discount = model.DiscountPrice != null ? Discount.Discounted : Discount.FixedPrice,
+            ExpiryDate = vendorPlan.PlanTier.Name == "premium tier" ? DateTimeOffset.UtcNow.AddMonths(2) :
+                 vendorPlan.PlanTier.Name == "basic tier" || vendorPlan.PlanTier.Name == "standard tier" ? DateTimeOffset.UtcNow.AddMonths(1) : 
+                 vendorPlan.PlanTier.Name == "free tier" ? null : null
+        };
             await _unitOfWork.Context.AddAsync(ad);
             var images = new List<AdsImage>();
 
@@ -90,6 +99,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
     {  
         var ads = _unitOfWork.Context.Ads
             .AsNoTracking()
+            .Where(x => x.Status == AdsStatus.Active)
             .Select(x => new GetAdsDTO
             {
                 Id = x.Id,
@@ -98,11 +108,11 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 BrandName =  x.Vendor.BrandName,
                 VendorImage = x.Vendor.VendorPictureUrl,
                 Price = x.Price,
-                DiscountPrice = x.DiscountPrice,
+                DiscountPrice = x.DiscountPrice ?? 0,
                 AdsImageUrl = _unitOfWork.Context.AdsImages
-                    .Where(x => x.AdsId == x.Id)
-                    .Select(x => x.ImageUrl)
-                    .ToList(),
+                .Where(x => x.AdsId == x.Id)
+                .Select(x => x.ImageUrl)
+                .FirstOrDefault(),
                 ExpiryDate = x.ExpiryDate,
                 Status = x.Status,
                 IsFeatured = x.IsFeatured,
@@ -110,7 +120,8 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 AdsCondition = x.AdsCondition,
                 NumberOfReviews = x.NumberOfReviews,
                 VendorId = x.VendorId,
-                AdsCategoryId = x.AdsCategoryId,
+                AdCategoryId = x.AdsCategoryId,
+                AdCategory = x.AdsCategory.Name,
                 CurrencyId = x.CurrencyId,
                 Discount = x.Discount
             });
@@ -131,19 +142,14 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 BrandName =  x.Vendor.BrandName,
                 VendorImage = x.Vendor.VendorPictureUrl,
                 Price = x.Price,
-                DiscountPrice = x.DiscountPrice,
+                DiscountPrice = x.DiscountPrice ?? 0,
                 AdsImageUrl = _unitOfWork.Context.AdsImages
-                    .Where(x => x.AdsId == x.Id)
-                    .Select(x => x.ImageUrl)
-                    .ToList(),                
-                ExpiryDate = x.ExpiryDate,
-                Status = x.Status,
+                .Where(x => x.AdsId == x.Id)
+                .Select(x => x.ImageUrl)
+                .FirstOrDefault(),
                 IsFeatured = x.IsFeatured,
-                AdsType = x.AdsType,
-                AdsCondition = x.AdsCondition,
-                NumberOfReviews = x.NumberOfReviews,
-                VendorId = x.VendorId,
-                AdsCategoryId = x.AdsCategoryId,
+                AdCategoryId = x.AdsCategoryId,
+                AdCategory = x.AdsCategory.Name,
                 CurrencyId = x.CurrencyId,
                 Discount = x.Discount
             });
@@ -164,7 +170,8 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 BrandName =  x.Vendor.BrandName,
                 VendorImage = x.Vendor.VendorPictureUrl,
                 Price = x.Price,
-                DiscountPrice = x.DiscountPrice,
+                QuantityInStock = x.QuantityInStock,
+                DiscountPrice = x.DiscountPrice ?? 0,
                 AdsImageUrl = _unitOfWork.Context.AdsImages
                     .Where(x => x.AdsId == x.Id)
                     .Select(x => x.ImageUrl)
@@ -176,7 +183,8 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 AdsCondition = x.AdsCondition,
                 NumberOfReviews = x.NumberOfReviews,
                 VendorId = x.VendorId,
-                AdsCategoryId = x.AdsCategoryId,
+                AdCategoryId = x.AdsCategoryId,
+                AdCategory = x.AdsCategory.Name,
                 CurrencyId = x.CurrencyId,
                 Discount = x.Discount
             })
@@ -206,6 +214,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
         var adsQuery = _unitOfWork.Context.Ads
             .AsNoTracking()
             .OrderByDescending(x => x.Created)
+            .Where(x => x.Status == AdsStatus.Active)
             .Select(x => new GetAdsDTO
             {
                 Id = x.Id,
@@ -214,19 +223,13 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 BrandName =  x.Vendor.BrandName,
                 VendorImage = x.Vendor.VendorPictureUrl,
                 Price = x.Price,
-                DiscountPrice = x.DiscountPrice,
+                DiscountPrice = x.DiscountPrice ?? 0,
                 AdsImageUrl = _unitOfWork.Context.AdsImages
-                    .Where(x => x.AdsId == x.Id)
-                    .Select(x => x.ImageUrl)
-                    .ToList(),                
-                ExpiryDate = x.ExpiryDate,
-                Status = x.Status,
-                IsFeatured = x.IsFeatured,
-                AdsType = x.AdsType,
-                AdsCondition = x.AdsCondition,
-                NumberOfReviews = x.NumberOfReviews,
-                VendorId = x.VendorId,
-                AdsCategoryId = x.AdsCategoryId,
+                .Where(x => x.AdsId == x.Id)
+                .Select(x => x.ImageUrl)
+                .FirstOrDefault(),                
+                AdCategoryId = x.AdsCategoryId,
+                AdCategory = x.AdsCategory.Name,
                 CurrencyId = x.CurrencyId,
                 Discount = x.Discount
             });
@@ -236,7 +239,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
         if(isFree is not null && !isFree.Value) adsQuery = adsQuery.Where(x => x.Price > 0);
         
         adsQuery = adsCategoryId == Guid.Empty || adsCategoryId == null ? adsQuery : 
-            adsQuery.Where(x => x.AdsCategoryId == adsCategoryId.Value);
+            adsQuery.Where(x => x.AdCategoryId == adsCategoryId.Value);
 
         adsQuery = string.IsNullOrEmpty(searchQuery) ? adsQuery :
             adsQuery.Where(x => x.Title.Contains(searchQuery) || x.Description.Contains(searchQuery));

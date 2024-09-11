@@ -23,14 +23,12 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
         var validInstitution = await _unitOfWork.Context.Institutions.AnyAsync(x => x.Id == model.InstitutionId.Value);
         if(!validInstitution) return _responseService.ErrorResponse<string>("Invalid request");
 
-        if (!Guid.TryParse(Constants.PlanTierFreePlanId, out Guid planTierId))return _responseService.ErrorResponse<string>("Invalid PlanTierId format");
 
 
         var vendor = new Vendor
         {
             ProfileId = user.Id,
             InstitutionId = model.InstitutionId.Value,
-            PlanTierId = planTierId,
             VendorPictureUrl = model.ProfilePictureUrl.ToLower(),
             BrandName = model.BrandName.ToLower(),
             FacebookUrl = model.FacebookUrl.ToLower(),
@@ -42,6 +40,21 @@ public class VendorService(IUnitOfWork _unitOfWork, IResponseService _responseSe
 
         await _unitOfWork.Context.AddAsync(vendor);
 
+       var freeTier = _unitOfWork.Context.PlanTiers.FirstOrDefault(pt => pt.Name == "free tier");
+
+        if (freeTier != null)
+        {
+            var vendorPlan = new VendorPlanTier
+            {
+                ProfileId = user.Id,
+                VendorId = vendor.Id,
+                PlanTierId = freeTier.Id, // Set the PlanTierId to the Id of the "free tier"
+                ExpiryDate = null // Set expiry date to null for free plan
+            };
+
+            // Save the vendor plan
+            await _unitOfWork.Context.VendorPlan.AddAsync(vendorPlan);
+        }
         var nin = new IdentityCard
         {
             ProfileId = user.Id,

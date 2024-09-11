@@ -82,10 +82,16 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
 				.Where(x => x.ProfileId == model.Id)
 				.Select(x => new { x.Id, x.VendorPictureUrl })
 				.FirstOrDefaultAsync();
+			var vendorPlan = await _unitOfWork.Context.VendorPlan
+				.AsNoTracking()
+				.Where(x => x.ProfileId == model.Id)
+				.Select(x => new { x.Id, x.PlanTierId, x.PlanTier.Name })
+				.FirstOrDefaultAsync();
 			
 			profile.ProfilePicUrl = vendor.VendorPictureUrl;
 			profile.VendorId = vendor.Id;
-			
+			profile.VendorPlanTierId = vendorPlan.PlanTierId;
+			profile.VendorPlanTier = vendorPlan.Name;
 		}
 
 		var claims = new List<Claim>

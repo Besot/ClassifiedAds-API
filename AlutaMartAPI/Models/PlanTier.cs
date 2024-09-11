@@ -7,5 +7,6 @@ namespace AlutaMartAPI.Models;
         public double Amount { get; set; }
         public int MaxAds { get; set; }
         public int MaxPicture { get; set; }
+        public bool IsAdVideo { get; set; }
         public int MaxFeatured { get; set; }
     }

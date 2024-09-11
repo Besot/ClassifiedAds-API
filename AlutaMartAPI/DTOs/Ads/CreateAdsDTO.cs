@@ -17,15 +17,22 @@ namespace AlutaMartAPI.DTOs;
         
         [Range(0, 15999999, ErrorMessage = "Ads price should be between 0 and 15,999,999")]
         public double Price { get; set; }
+
+        [Required(ErrorMessage ="Ad quantity is required")]
+        [Range(1, 999999, ErrorMessage ="Ad quantity value should be between 1 and 999999")]
+        public int QuantityInStock { get; set; }
+
         public Guid? AdsCategoryId { get; set; }
         public Guid? CurrencyId { get; set; }
-        public double DiscountPrice { get; set; }
+        public double? DiscountPrice { get; set; }
 
         [Required(ErrorMessage ="course image url is required")]
         public List<string> AdsImageUrls { get; set; }
         public bool IsFeatured { get; set; } = false;
 
-        [Range(1, 4, ErrorMessage ="roles value should be between 1 and 4")]
+        [Range(1, 4, ErrorMessage ="AdType value should be between 1 and 4")]
         public AdsType AdsType { get; set; }
+
+        [Required(ErrorMessage ="Ad quantity is required")]
         public AdsCondition AdsCondition { get; set; }
     }

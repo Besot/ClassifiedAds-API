@@ -16,4 +16,7 @@ public class  UserDTO
 	public Roles Access { get; set; }
 	public string AccessName => Access.Name();
 	public Guid? VendorId { get; set; }
+	public Guid? VendorPlanTierId { get; set; } // Add VendorPlanTier info
+	public string VendorPlanTier { get; set; } // Add VendorPlanTier info
+
 }

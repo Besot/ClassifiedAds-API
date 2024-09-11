@@ -19,6 +19,4 @@ namespace AlutaMartAPI.Models;
         public long NumberOfReviews { get; set; }
         public VerificationStatus VerificationStatus { get; set; }
         public IdentityCard NIN { get; set; }
-        public Guid PlanTierId { get; set; }
-        public virtual PlanTier PlanTier { get; set; }
     }

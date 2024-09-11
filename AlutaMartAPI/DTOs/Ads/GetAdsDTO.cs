@@ -10,7 +10,7 @@ namespace AlutaMartAPI.DTOs;
         public string VendorImage { get; set; }
         public double Price { get; set; }
         public double DiscountPrice { get; set; }
-        public List<string> AdsImageUrl { get; set; }
+        public string AdsImageUrl { get; set; }
         public DateTimeOffset? ExpiryDate { get; set; }
         public AdsStatus Status { get; set; }
         public bool IsFeatured { get; set; } = false;
@@ -19,6 +19,7 @@ namespace AlutaMartAPI.DTOs;
         public AdsCondition AdsCondition { get; set; }
         public long NumberOfReviews { get; set; }
         public Guid VendorId { get; set; }
-        public Guid AdsCategoryId { get; set; }
+        public string AdCategory { get; set; }
+        public Guid AdCategoryId { get; set; }
         public Guid CurrencyId { get; set; }
     }
