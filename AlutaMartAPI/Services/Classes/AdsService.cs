@@ -331,7 +331,18 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
 
     public async Task<ServiceResponse<string>> DeleteAdAsync(Guid adId, Guid vendorId, bool isAdmin)
     {
-        throw new NotImplementedException();
-    }
+            var ad = await _unitOfWork.Context.Ads
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == adId);
 
+            if (ad == null) return _responseService.ErrorResponse<string>("Ad not found");
+
+            if (!isAdmin && ad.VendorId != vendorId) return _responseService.ErrorResponse<string>("You do not have permission to delete this ad");
+
+            await _unitOfWork.Context.Database.ExecuteSqlRawAsync(AdSQL.DeleteAd, new NpgsqlParameter("@adId", adId));
+
+            await _unitOfWork.CommitAsync();
+
+        return _responseService.SuccessResponse("Ad deleted successfully");
+    }
 }

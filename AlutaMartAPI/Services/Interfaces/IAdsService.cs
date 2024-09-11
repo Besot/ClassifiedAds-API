@@ -5,7 +5,6 @@ namespace AlutaMartAPI.Services;
 public interface IAdsService
 {
     Task<ServiceResponse<string>> CreateAdsAsync(CreateAdsDTO model, UserDTO user);
-    Task<object> DeleteAdAsync(Guid adId, Guid value);
     Task<ServiceResponse<PagedList<GetAdsDTO>>> GetAsync(int Page = 1, int pageSize = 15);
     Task<ServiceResponse<PagedList<GetAdsDTO>>> GetByVendorIdAsync(Guid vendorId, int page = 1, int pageSize = 10);
     Task<ServiceResponse<GetAdDetailsDTO>> GetDetailsAsync(Guid adId, UserDTO user);
