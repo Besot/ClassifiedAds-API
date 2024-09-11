@@ -9,6 +9,7 @@ using Npgsql;
 namespace AlutaMartAPI.Services;
 public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseService) : BaseDBService(_unitOfWork, _responseService), IAdsService
 {
+
     public async Task<ServiceResponse<string>> CreateAdsAsync(CreateAdsDTO model, UserDTO user)
     {
         // Validate the vendor ID
@@ -267,18 +268,23 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
 
         var isValidCurrency = await _unitOfWork.Context.Currencies.AnyAsync(x => x.Id == model.CurrencyId.Value);
         if(!isValidCurrency) return _responseService.ErrorResponse<string>("Select a valid currency");
+        
+        var discount = model.DiscountPrice == null ? Discount.FixedPrice : Discount.Discounted;
 
         var parameters = new List<object>
         {
             new NpgsqlParameter("@title", model.Title),
             new NpgsqlParameter("@description", model.Description),
             new NpgsqlParameter("@price", model.Price),
+            new NpgsqlParameter("@quantityInStock", model.QuantityInStock),
             new NpgsqlParameter("@discountPrice", model.DiscountPrice),
             new NpgsqlParameter("@isFeatured", model.IsFeatured),
             new NpgsqlParameter("@adsType", model.AdsType),
             new NpgsqlParameter("@adsCondition", model.AdsCondition),
             new NpgsqlParameter("@adsCategoryId", model.AdsCategoryId),
-            new NpgsqlParameter("@currencyId", model.CurrencyId)
+            new NpgsqlParameter("@currencyId", model.CurrencyId),
+            new NpgsqlParameter("@discount", discount)
+
         };
 
         await _unitOfWork.Context.Database.ExecuteSqlRawAsync(AdSQL.UpdateAd, parameters);
@@ -322,4 +328,10 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             await _unitOfWork.CommitAsync();
         return _responseService.SuccessResponse("Ad Updated Successfully");
     }
+
+    public async Task<ServiceResponse<string>> DeleteAdAsync(Guid adId, Guid vendorId, bool isAdmin)
+    {
+        throw new NotImplementedException();
+    }
+
 }
