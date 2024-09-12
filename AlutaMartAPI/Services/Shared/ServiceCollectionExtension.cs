@@ -15,7 +15,7 @@ namespace AlutaMartAPI.Services
             services.AddScoped<IAdsService, AdsService>();
             services.AddScoped<IPlanTierService, PlanTierService>();
 
-
+            services.AddScoped<ICartService, CartService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IVendorService, VendorService>();
