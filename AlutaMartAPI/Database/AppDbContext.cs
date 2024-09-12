@@ -21,7 +21,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 	public virtual DbSet<Institution> Institutions { get; set; }
 
 	public virtual DbSet<Buyer> Buyers { get; set; }
-	public virtual DbSet<AddedToCart> AddedToCarts { get; set; }
+	public virtual DbSet<Cart> Carts { get; set; }
 	public virtual DbSet<PlanTier> PlanTiers { get; set; }
 
 	public virtual DbSet<IdentityCard> IdentityCards { get; set; }
@@ -65,7 +65,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
 
 		modelBuilder.Entity<Buyer>().HasQueryFilter(p => !p.IsDeleted);
-		modelBuilder.Entity<AddedToCart>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<Cart>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<PlanTier>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<IdentityCard>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<WaitingUser>().HasQueryFilter(p => !p.IsDeleted);

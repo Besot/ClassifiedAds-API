@@ -5,6 +5,7 @@ using AlutaMartAPI.Database;
 using AlutaMartAPI.DTOs;
 using AlutaMartAPI.Models;
 using AlutaMartAPI.Utilities;
+using Bugsnag.Payload;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -93,6 +94,19 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
 			profile.VendorPlanTierId = vendorPlan.PlanTierId;
 			profile.VendorPlanTier = vendorPlan.Name;
 		}
+		
+		if(model.Role == Roles.Buyer)
+		{
+			var buyer = await _unitOfWork.Context.Buyers
+				.AsNoTracking()
+				.Where(x => x.ProfileId == model.Id)
+				.Select(x => new { x.Id, x.Profile.ProfilePictureUrl})
+				.FirstOrDefaultAsync();
+			
+			profile.ProfilePicUrl = buyer.ProfilePictureUrl;
+			profile.BuyerId = buyer.Id;
+		}
+
 
 		var claims = new List<Claim>
 		{
