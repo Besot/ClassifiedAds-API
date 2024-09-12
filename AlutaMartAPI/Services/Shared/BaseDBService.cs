@@ -76,35 +76,45 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
 			IsActive = model.IsActive,
 		};
 
-		if(model.Role == Roles.Vendor)
-		{
-			var vendor = await _unitOfWork.Context.Vendors
-				.AsNoTracking()
-				.Where(x => x.ProfileId == model.Id)
-				.Select(x => new { x.Id, x.VendorPictureUrl })
-				.FirstOrDefaultAsync();
-			var vendorPlan = await _unitOfWork.Context.VendorPlan
-				.AsNoTracking()
-				.Where(x => x.ProfileId == model.Id)
-				.Select(x => new { x.Id, x.PlanTierId, x.PlanTier.Name })
-				.FirstOrDefaultAsync();
-			
-			profile.ProfilePicUrl = vendor.VendorPictureUrl;
-			profile.VendorId = vendor.Id;
-			profile.VendorPlanTierId = vendorPlan.PlanTierId;
-			profile.VendorPlanTier = vendorPlan.Name;
+		if (model.Role == Roles.Vendor)
+    	{
+        var vendorData = await _unitOfWork.Context.Vendors
+            .AsNoTracking()
+            .Where(x => x.ProfileId == model.Id)
+            .Select(x => new
+            {
+                VendorId = x.Id,
+                x.VendorPictureUrl,
+                x.VendorPlanTier.PlanTierId,
+                PlanTierName = x.VendorPlanTier.PlanTier.Name
+            })
+            .FirstOrDefaultAsync();
+
+        if (vendorData != null)
+        {
+            profile.ProfilePicUrl = vendorData.VendorPictureUrl;
+            profile.VendorId = vendorData.VendorId;
+            profile.VendorPlanTierId = vendorData.PlanTierId;
+            profile.VendorPlanTier = vendorData.PlanTierName;
+        }
 		}
-		
-		if(model.Role == Roles.Buyer)
+		else if (model.Role == Roles.Buyer)
 		{
-			var buyer = await _unitOfWork.Context.Buyers
+			var buyerData = await _unitOfWork.Context.Buyers
 				.AsNoTracking()
 				.Where(x => x.ProfileId == model.Id)
-				.Select(x => new { x.Id, x.Profile.ProfilePictureUrl})
+				.Select(x => new
+				{
+					BuyerId = x.Id,
+					ProfilePicUrl = x.Profile.ProfilePictureUrl
+				})
 				.FirstOrDefaultAsync();
-			
-			profile.ProfilePicUrl = buyer.ProfilePictureUrl;
-			profile.BuyerId = buyer.Id;
+
+			if (buyerData != null)
+			{
+				profile.ProfilePicUrl = buyerData.ProfilePicUrl;
+				profile.BuyerId = buyerData.BuyerId;
+			}
 		}
 
 

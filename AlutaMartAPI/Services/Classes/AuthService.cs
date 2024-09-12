@@ -63,7 +63,7 @@ namespace AlutaMartAPI.Services;
 		{
 			FirstName = Constants.AdminFirstName,
 			LastName = Constants.AdminLastName,
-			ProfilePictureUrl = "https://pather-bucket.s3.eu-central-1.amazonaws.com/57aca2a0-32d8-4b05-8541-c776cdf81a1f.png",
+			ProfilePictureUrl = Constants.ProfilePicture,
 			Email = normalizedEmail,
 			EmailConfirmed = true,
 			PhoneNumber = Constants.AdminPhone,
@@ -164,6 +164,8 @@ namespace AlutaMartAPI.Services;
 			LastName = model.LastName.ToLower(),
 			Email = model.Email.ToLower(),
 			UserName = normalizedEmail,
+			ProfilePictureUrl = Constants.ProfilePicture,
+			PhoneNumber = model.PhoneNumber,
 			Created = date,
 			Modified = date,
 			Role = Roles.Buyer,
@@ -171,6 +173,11 @@ namespace AlutaMartAPI.Services;
 			EmailConfirmed = false,
 			TokenResetTime = date,
 			Token = AppUtilities.RandomInt(9)
+		};
+		var buyer = new Buyer
+		{
+			ProfileId = profile.Id,
+			AdPurchasedCount = 0,
 		};
 
 		List<string> passwordError = [];
