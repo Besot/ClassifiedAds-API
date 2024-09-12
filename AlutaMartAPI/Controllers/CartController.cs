@@ -16,4 +16,10 @@ namespace AlutaMartAPI.Controllers;
         [ProducesResponseType(type: typeof(ServiceResponse<PagedList<GetCartDTO>>), statusCode: 200)]
         public async Task<IActionResult> GetCartByBuyerId(int page = 1, int pageSize = 15)
             => Ok(await cartService.GetCartByIdAsync(CurrentUser, page, pageSize));
+
+        [HttpDelete("RemoveFromCart")]
+        [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
+        public async Task<IActionResult> RemoveFromCart([FromBody] RemoveFromCartDTO model)
+            => Ok(await cartService.RemoveFromCartAsync(model, CurrentUser));
+
     }

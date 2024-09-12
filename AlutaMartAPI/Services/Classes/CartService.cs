@@ -68,4 +68,37 @@ public class CartService(IUnitOfWork _unitOfWork, IResponseService _responseServ
 
         return await _responseService.PagedResponseAsync(cartItems, page, pageSize, "CartItems");
     }
+
+    public async Task<ServiceResponse<string>> RemoveFromCartAsync(RemoveFromCartDTO model, UserDTO user)
+    {
+        // Validate AdsId
+        if (!model.AdsId.HasValue || model.AdsId == Guid.Empty)
+            return _responseService.ErrorResponse<string>("Ads ID is required");
+
+        // Validate Quantity
+        if (model.Quantity <= 0)
+            return _responseService.ErrorResponse<string>("Invalid quantity value");
+
+        // Fetch the cart item
+        var cartItem = await _unitOfWork.Context.Carts
+            .FirstOrDefaultAsync(c => c.ProfileId == user.Id 
+                                    && c.AdsId == model.AdsId.Value 
+                                    && c.IsActive);
+
+        if (cartItem == null)
+            return _responseService.ErrorResponse<string>("Cart item not found");
+
+        // Remove or update cart item based on the quantity
+        if (model.Quantity >= cartItem.QuantityAdded)
+        {
+            _unitOfWork.Context.Carts.Remove(cartItem); // Remove the item if the quantity is greater or equal
+        }
+        else
+        {
+            cartItem.QuantityAdded -= model.Quantity; // Reduce the quantity
+        }
+
+        await _unitOfWork.CommitAsync(); // Save changes
+        return _responseService.SuccessResponse("Cart item updated/removed successfully.");
+    }
 }
