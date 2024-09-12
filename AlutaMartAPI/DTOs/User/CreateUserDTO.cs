@@ -22,6 +22,12 @@ public class CreateUserDTO
 	[MinLength(4, ErrorMessage ="email should not be less than 4 characters")]
 	public string Email { get; set; }
 
+	[Required(ErrorMessage ="PhoneNumber is required")]
+    [MaxLength(14, ErrorMessage ="PhoneNumber should not be more than 14 characters")]
+    [MinLength(8, ErrorMessage ="PhoneNumber should not be less than 8 characters")]
+    public string PhoneNumber { get; set; }
+
+
 	[Required(ErrorMessage ="Password is required")]
 	[MaxLength(60, ErrorMessage ="Password should not be more than 60 characters")]
 	[MinLength(7, ErrorMessage ="Password should not be less than 7 characters")]

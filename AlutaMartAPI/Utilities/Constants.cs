@@ -47,7 +47,7 @@ public static class Constants
     public static string AdsCategoryCacheKey => "adsCategory";
     public static string InstitutionCacheKey => "Institution";
     public static string PlanTierCacheKey => "PlanTier";
-    public static string PlanTierFreePlanId => Environment.GetEnvironmentVariable("PLANTIER_FREE_PLAN_ID");
+    public static string ProfilePicture => Environment.GetEnvironmentVariable("PROFILE_PIC");
 
 
 
