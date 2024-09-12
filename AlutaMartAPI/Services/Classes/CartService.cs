@@ -101,4 +101,18 @@ public class CartService(IUnitOfWork _unitOfWork, IResponseService _responseServ
         await _unitOfWork.CommitAsync(); // Save changes
         return _responseService.SuccessResponse("Cart item updated/removed successfully.");
     }
+
+    public async Task<ServiceResponse<string>> DeleteCartAsync(Guid cartId, UserDTO user)
+    {
+        var cartItem = await _unitOfWork.Context.Carts
+            .FirstOrDefaultAsync(c => c.Id == cartId && c.BuyerId == user.BuyerId.Value && c.IsActive);
+
+        if (cartItem == null)return _responseService.ErrorResponse<string>("Cart item not found");
+
+        // Remove the cart item
+        _unitOfWork.Context.Carts.Remove(cartItem);
+        await _unitOfWork.CommitAsync();
+
+        return _responseService.SuccessResponse("Cart item deleted successfully.");
+    }
 }
