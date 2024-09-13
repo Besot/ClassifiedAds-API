@@ -11,4 +11,8 @@ namespace AlutaMartAPI.SQLQueries;
         public static string SetIsFeaturedFalseForExpiredAds => @"UPDATE ""Ads"" set ""IsFeatured"" = false
             WHERE ""FeaturedExpiryDate"" < now() AND ""IsFeatured"" = true
             LIMIT @batchSize";
+
+         public static string UpdateAdEngagement => @"UPDATE ""AdsEngagements"" SET ""VisitCount"" = @VisitCount, 
+                ""IsEnrolled"" = CASE WHEN @IsEnrolled = true THEN true ELSE ""IsEnrolled"" END 
+                WHERE ""AdId"" = @AdId AND ""ProfileId"" = @ProfileId";
     }

@@ -11,5 +11,7 @@ public interface INotificationService
     Task SetPasswordEmailAsync(string email, string firstName, Roles adminRole, string token);
 	Task SetPasswordSuccessEmailAsync(string email, string firstName, Roles role);
 	Task VendorOnboardingEmailAsync(string email, string firstName);
+    Task AdPurchaseNoticeEmailAsync(string email, string vendorFirstName, string buyerFullName, string AdTitle);
+
 
 }

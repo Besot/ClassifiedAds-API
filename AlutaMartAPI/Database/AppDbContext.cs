@@ -84,6 +84,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 		modelBuilder.Entity<Transaction>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<Wallet>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<ProcessorDataLog>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<AdsEngagement>().HasQueryFilter(p => !p.IsDeleted);
+
 
 
 		#endregion

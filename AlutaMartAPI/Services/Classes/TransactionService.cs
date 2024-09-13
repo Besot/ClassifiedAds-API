@@ -142,15 +142,15 @@ public class TransactionService(
 
         await CreditAdminAsync(transaction.Charges, payment.CurrencyId, payment.AdTitle, payment.Reference, payment.Processor);
 
-        await CourseEngagementAsync(payment.CourseId.Value, payment.LearnerProfileId, true);
+        await AdEngagementAsync(payment.AdId.Value, payment.BuyerProfileId, true);
 
-        await _notificationService.CourseEnrollmentNoticeEmailAsync(payment.ExpertEmail, payment.ExpertFirstName, 
-            $"{payment.LearnerFirstName} {payment.LearnerLastName}", payment.CourseTitle);
+        await _notificationService.AdPurchaseNoticeEmailAsync(payment.VendorEmail, payment.VendorFirstName, 
+            $"{payment.BuyerFirstName} {payment.BuyerLastName}", payment.AdTitle);
 
-        return _responseService.SuccessResponse(payment.CourseId.ToString(), "course enrolled successfully...");
+        return _responseService.SuccessResponse(payment.AdId.ToString(), "Ad purchased successfully...");
     }
 
-    private async Task CreditAdminAsync(double amount, Guid currencyId, string courseTitle, double reference, PaymentProcessor paymentProcessor)
+    private async Task CreditAdminAsync(double amount, Guid currencyId, string adTitle, double reference, PaymentProcessor paymentProcessor)
     {
         var adminProfileId = await _unitOfWork.Context.Profiles
             .AsNoTracking()
@@ -170,7 +170,7 @@ public class TransactionService(
             CurrencyId = currencyId,
             ProfileId = adminProfileId,
             Processor = paymentProcessor,
-            Narration = $"Revenue from payment on {courseTitle} with Ref: {reference}"
+            Narration = $"Revenue from payment on {adTitle} with Ref: {reference}"
         };
 
         await _unitOfWork.Context.AddAsync(adminPaymentInflow);

@@ -4,10 +4,12 @@ using System.Text;
 using AlutaMartAPI.Database;
 using AlutaMartAPI.DTOs;
 using AlutaMartAPI.Models;
+using AlutaMartAPI.SQLQueries;
 using AlutaMartAPI.Utilities;
 using Bugsnag.Payload;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 
 namespace AlutaMartAPI.Services;
 
@@ -145,4 +147,37 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
 			TokenExp = Convert.ToInt32(expiryDate.TotalSeconds),
 		};
 	}
+
+	public async Task AdEngagementAsync(Guid adId, Guid profileId, bool isEnrolling = false)
+    {
+        var adEngagement = await _unitOfWork.Context.AdsEngagements
+            .FirstOrDefaultAsync(x => x.AdId == adId && x.ProfileId == profileId);
+
+        if (adEngagement == null)
+        {
+            adEngagement = new AdsEngagement
+            {
+                AdId = adId,
+                ProfileId = profileId,
+                VisitCount = 1,
+                IsEnrolled = isEnrolling
+            };
+            await _unitOfWork.Context.AdsEngagements.AddAsync(adEngagement);
+            await _unitOfWork.CommitAsync();
+        }
+        else
+        {
+            adEngagement.VisitCount += 1;
+
+            var parameters = new[]
+            {
+                new NpgsqlParameter("@VisitCount", adEngagement.VisitCount),
+                new NpgsqlParameter("@IsEnrolled", isEnrolling),
+                new NpgsqlParameter("@CourseId", adId),
+                new NpgsqlParameter("@ProfileId", profileId)
+            };
+
+            await _unitOfWork.Context.Database.ExecuteSqlRawAsync(AdSQL.UpdateAdEngagement, parameters);
+        }
+    }
 }
