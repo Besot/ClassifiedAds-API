@@ -364,6 +364,25 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
 
     public async Task<ServiceResponse<string>> PurchaseAsync(UserDTO user, Guid adId, int quantity)
     {
+         var ad = await _unitOfWork.Context.Ads
+            .AsNoTracking()
+            .Where(x => x.Id == adId)
+            .Select(x => new
+            {
+                x.VendorId,
+                x.Price,
+                x.DiscountPrice,
+                x.Discount,
+                x.Title,
+                x.QuantityInStock,
+                x.CurrencyId,
+                VendorFirstName = x.Vendor.Profile.FirstName,
+                VendorEmail = x.Vendor.Profile.Email
+            })
+            .FirstOrDefaultAsync();
+
+        if(quantity > ad.QuantityInStock) return _responseService.ErrorResponse<string>("Quantity selected is more than the available stock");
+        
         var isOnboardedAsBuyer = await _unitOfWork.Context.Buyers
             .AsNoTracking()
             .Where(x => x.ProfileId == user.Id)
@@ -386,24 +405,8 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             new NpgsqlParameter("@buyerId", isOnboardedAsBuyer.Id));
         }
         
-        var ad = await _unitOfWork.Context.Ads
-            .AsNoTracking()
-            .Where(x => x.Id == adId)
-            .Select(x => new
-            {
-                x.VendorId,
-                x.Price,
-                x.DiscountPrice,
-                x.Discount,
-                x.Title,
-                x.CurrencyId,
-                VendorFirstName = x.Vendor.Profile.FirstName,
-                VendorEmail = x.Vendor.Profile.Email
-            })
-            .FirstOrDefaultAsync();
-
         if(ad.VendorId == Guid.Empty || ad is null) return _responseService.ErrorResponse<string>("Invalid ad Id");
-        
+
         var amount = ad.Discount == Discount.Discounted ? ad.DiscountPrice * quantity : ad.Price * quantity;
 
         if(amount > 0)
