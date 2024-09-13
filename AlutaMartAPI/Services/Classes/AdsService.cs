@@ -345,4 +345,21 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
 
         return _responseService.SuccessResponse("Ad deleted successfully");
     }
+
+    public async Task<ServiceResponse<int>> SetIsFeaturedFalseForExpiredAdsAsync(int batchSize)
+    {
+        try
+        {
+            var affectedRows = await _unitOfWork.Context.Database.ExecuteSqlRawAsync(AdSQL.SetIsFeaturedFalseForExpiredAds, new NpgsqlParameter("@batchSize", batchSize)
+            );
+
+            await _unitOfWork.CommitAsync();
+            return _responseService.SuccessResponse<int>(affectedRows, "Successfully updated expired featured ads.");
+        }
+        catch (Exception ex)
+        {
+            return _responseService.ErrorResponse<int>($"Error updating expired featured ads: {ex.Message}");
+        }
+    }
+
 }

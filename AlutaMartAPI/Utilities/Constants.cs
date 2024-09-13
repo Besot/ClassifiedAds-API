@@ -24,6 +24,7 @@ public static class Constants
     public static string ExpertFrontendBaseUrl => Environment.GetEnvironmentVariable("EXPERT_FRONT_END_BASE_URL");
     public static string LearnerFrontendBaseUrl => Environment.GetEnvironmentVariable("LEARNER_FRONT_END_BASE_URL");
     public static string AdminFrontendBaseUrl => Environment.GetEnvironmentVariable("ADMIN_FRONT_END_BASE_URL");
+    public static string FrontendBaseUrl => Environment.GetEnvironmentVariable("FRONT_END_BASE_URL");
 
 
 
@@ -54,4 +55,11 @@ public static class Constants
     public static string GoogleClientId => Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
     public static string GoogleClientSecrete => Environment.GetEnvironmentVariable("GOOGLE_SECRETE_KEY");
     public static string GoogleCalendarScope => "https://www.googleapis.com/auth/calendar";
+
+    public static string PaystackSecreteKey => Environment.GetEnvironmentVariable("PAYSTACK_SECRETE_KEY");
+
+    public static List<string> AcceptedCurrencyCode => ["ngn"];
+
+    public static string NGN => "ngn";
+  
 }

@@ -72,4 +72,14 @@ public class NotificationService(IWebHostEnvironment webHostEnvironment, IMailSe
 
 		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email, "Welcome to AlutaMart as a Vendor!");
 	}
+
+	public async Task AdPurchaseNoticeEmailAsync(string email, string vendorFirstName, string buyerFullName, string AdTitle)
+    {
+		var fullPath = Path.Combine(_webHostEnv.WebRootPath, "course_enrollment_notice.html");
+		var htmlMessage = File.ReadAllText(fullPath);
+		htmlMessage = htmlMessage.Replace("{{expertFirstName}}", vendorFirstName.ToTitleCase());
+		htmlMessage = htmlMessage.Replace("{{learnerFullName}}", buyerFullName.ToTitleCase());
+		htmlMessage = htmlMessage.Replace("{{courseTitle}}", AdTitle.ToTitleCase());
+		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email,  "Ad Purchase Notice!");
+    }
 }
