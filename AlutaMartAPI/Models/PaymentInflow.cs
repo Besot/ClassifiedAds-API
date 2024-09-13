@@ -7,7 +7,7 @@ public class PaymentInflow : BaseEntity
     public double Amount { get; set; }
     public double Charges { get; set; }
     public double Revenue { get; set; }
-
+    public int Quantity { get; set; }
     public DateTimeOffset? DatePaid { get; set; }    
     public double Reference { get; set; }
 

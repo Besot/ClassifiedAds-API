@@ -12,7 +12,7 @@ public interface IAdsService
     Task<ServiceResponse<string>> UpdateAdAsync(Guid adId, CreateAdsDTO model, UserDTO user);
     Task<ServiceResponse<string>> DeleteAdAsync(Guid adId, Guid vendorId, bool isAdmin);
     Task<ServiceResponse<int>> SetIsFeaturedFalseForExpiredAdsAsync(int batchSize);
-    Task<ServiceResponse<string>> PurchaseAsync(UserDTO user, Guid adId);
+    Task<ServiceResponse<string>> PurchaseAsync(UserDTO user, Guid adId, int quantity);
 
 
 }

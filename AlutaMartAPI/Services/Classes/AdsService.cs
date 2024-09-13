@@ -362,20 +362,28 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
         }
     }
 
-    public async Task<ServiceResponse<string>> PurchaseAsync(UserDTO user, Guid adId)
+    public async Task<ServiceResponse<string>> PurchaseAsync(UserDTO user, Guid adId, int quantity)
     {
         var isOnboardedAsBuyer = await _unitOfWork.Context.Buyers
-            .AnyAsync(x => x.ProfileId == user.Id);
-        
-        if(!isOnboardedAsBuyer)
+            .AsNoTracking()
+            .Where(x => x.ProfileId == user.Id)
+            .Select(x => new{ x.Id, x.AdPurchasedCount }).FirstOrDefaultAsync();
+
+        if(isOnboardedAsBuyer == null)
         {
             var buyer = new Buyer
             {
                 ProfileId = user.Id,
                 InstitutionId = null,
-                AdPurchasedCount = 1
+                AdPurchasedCount = quantity
             };
             await _unitOfWork.Context.AddAsync(buyer);
+        }
+        else
+        {
+            await _unitOfWork.Context.Database.ExecuteSqlRawAsync(BuyerSQL.UpdateAdPurchasedCount, 
+            new NpgsqlParameter("@quantity", quantity), 
+            new NpgsqlParameter("@buyerId", isOnboardedAsBuyer.Id));
         }
         
         var ad = await _unitOfWork.Context.Ads
@@ -385,6 +393,8 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             {
                 x.VendorId,
                 x.Price,
+                x.DiscountPrice,
+                x.Discount,
                 x.Title,
                 x.CurrencyId,
                 VendorFirstName = x.Vendor.Profile.FirstName,
@@ -393,8 +403,10 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             .FirstOrDefaultAsync();
 
         if(ad.VendorId == Guid.Empty || ad is null) return _responseService.ErrorResponse<string>("Invalid ad Id");
+        
+        var amount = ad.Discount == Discount.Discounted ? ad.DiscountPrice * quantity : ad.Price * quantity;
 
-        if(ad.Price > 0)
+        if(amount > 0)
         {
             var currencyCode = await _unitOfWork.Context.Currencies
                 .AsNoTracking()
@@ -403,19 +415,19 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 .FirstOrDefaultAsync();
             
             if(!Constants.AcceptedCurrencyCode.Contains(currencyCode.ToLower())) return _responseService.ErrorResponse<string>("unable to process this currency at the moment");
-
-            var charges = ad.Price /100 * 8;
+            var charges = (double)amount /100 * 8.3;
             var payment = new PaymentInflow
             {
-                Amount = ad.Price,
+                Amount = (double)amount,
                 Reference = AppUtilities.RandomLong(12, false, true),
                 Narration = $"{user.FullName} purchased {ad.Title.ToLower()}",
                 Status = PaymentStatus.Initiated,
                 CurrencyId = ad.CurrencyId,
                 VendorId = ad.VendorId,
                 AdId = adId,
+                Quantity = quantity,
                 ProfileId = user.Id,
-                Revenue = ad.Price - charges,
+                Revenue = (double)amount - charges,
                 Charges = charges
             };
             await _unitOfWork.Context.AddAsync(payment);
@@ -433,7 +445,7 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
                 payment.Processor = PaymentProcessor.Paystack;
                 processorDataLog.Processor = PaymentProcessor.Paystack;
 
-                var paystackService = await _paystackService.CreatePaymentLinkAsync(ad.Price, currencyCode, user, payment.Id, payment.Reference);
+                var paystackService = await _paystackService.CreatePaymentLinkAsync((double)amount, currencyCode, user, payment.Id, payment.Reference);
                 if(!paystackService.Status) return _responseService.ErrorResponse<string>("Payment service downtime...");
 
                 processorDataLog.ProcessorData = paystackService.Data.ToJson();
