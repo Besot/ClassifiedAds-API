@@ -23,6 +23,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 	public virtual DbSet<Buyer> Buyers { get; set; }
 	public virtual DbSet<Cart> Carts { get; set; }
 	public virtual DbSet<PlanTier> PlanTiers { get; set; }
+	public virtual DbSet<PurchasedAd> PurchasedAds { get; set; }
+
 
 	public virtual DbSet<IdentityCard> IdentityCards { get; set; }
 	public virtual DbSet<AdsReceipt> AdsReceipts { get; set; }
@@ -63,6 +65,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 		modelBuilder.Entity<AdsVideo>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsReceipt>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsComment>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<PurchasedAd>().HasQueryFilter(p => !p.IsDeleted);
+
 
 		modelBuilder.Entity<Currency>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<Vendor>().HasQueryFilter(p => !p.IsDeleted);

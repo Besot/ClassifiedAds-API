@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace AlutaMartAPI.Services;
-public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseService) : BaseDBService(_unitOfWork, _responseService), IAdsService
+public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseService, IPaystackService _paystackService, INotificationService _notificationService) : BaseDBService(_unitOfWork, _responseService), IAdsService
 {
 
     public async Task<ServiceResponse<string>> CreateAdsAsync(CreateAdsDTO model, UserDTO user)
@@ -360,6 +360,122 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
         {
             return _responseService.ErrorResponse<int>($"Error updating expired featured ads: {ex.Message}");
         }
+    }
+
+    public async Task<ServiceResponse<string>> PurchaseAsync(UserDTO user, Guid adId)
+    {
+        var isOnboardedAsBuyer = await _unitOfWork.Context.Buyers
+            .AnyAsync(x => x.ProfileId == user.Id);
+        
+        if(!isOnboardedAsBuyer)
+        {
+            var buyer = new Buyer
+            {
+                ProfileId = user.Id,
+                InstitutionId = null,
+                AdPurchasedCount = 1
+            };
+            await _unitOfWork.Context.AddAsync(buyer);
+        }
+        
+        var ad = await _unitOfWork.Context.Ads
+            .AsNoTracking()
+            .Where(x => x.Id == adId)
+            .Select(x => new
+            {
+                x.VendorId,
+                x.Price,
+                x.Title,
+                x.CurrencyId,
+                VendorFirstName = x.Vendor.Profile.FirstName,
+                VendorEmail = x.Vendor.Profile.Email
+            })
+            .FirstOrDefaultAsync();
+
+        if(ad.VendorId == Guid.Empty || ad is null) return _responseService.ErrorResponse<string>("Invalid ad Id");
+
+        if(ad.Price > 0)
+        {
+            var currencyCode = await _unitOfWork.Context.Currencies
+                .AsNoTracking()
+                .Where(x => x.Id == ad.CurrencyId)
+                .Select(x => x.Code)
+                .FirstOrDefaultAsync();
+            
+            if(!Constants.AcceptedCurrencyCode.Contains(currencyCode.ToLower())) return _responseService.ErrorResponse<string>("unable to process this currency at the moment");
+
+            var charges = ad.Price /100 * 8;
+            var payment = new PaymentInflow
+            {
+                Amount = ad.Price,
+                Reference = AppUtilities.RandomLong(12, false, true),
+                Narration = $"{user.FullName} purchased {ad.Title.ToLower()}",
+                Status = PaymentStatus.Initiated,
+                CurrencyId = ad.CurrencyId,
+                VendorId = ad.VendorId,
+                AdId = adId,
+                ProfileId = user.Id,
+                Revenue = ad.Price - charges,
+                Charges = charges
+            };
+            await _unitOfWork.Context.AddAsync(payment);
+
+            var processorDataLog = new ProcessorDataLog
+            {
+                PaymentInflowId = payment.Id,
+                Status = PaymentStatus.Initiated
+            };
+
+            var returnUrl = "";
+
+            if(currencyCode.Equals(Constants.NGN, StringComparison.CurrentCultureIgnoreCase))
+            {
+                payment.Processor = PaymentProcessor.Paystack;
+                processorDataLog.Processor = PaymentProcessor.Paystack;
+
+                var paystackService = await _paystackService.CreatePaymentLinkAsync(ad.Price, currencyCode, user, payment.Id, payment.Reference);
+                if(!paystackService.Status) return _responseService.ErrorResponse<string>("Payment service downtime...");
+
+                processorDataLog.ProcessorData = paystackService.Data.ToJson();
+                returnUrl = paystackService.Data.data.authorization_url;
+
+                payment.ExternalReference = paystackService.Data.data.reference;
+            }
+            else
+            {
+                return _responseService.ErrorResponse<string>("We currently do not support payment with the selected currency...");
+            }
+            
+            await _unitOfWork.Context.AddAsync(processorDataLog);
+            await _unitOfWork.CommitAsync();
+
+            return _responseService.SuccessResponse(returnUrl, "Payment initiated, you will redirect to payment gateway");
+        }
+
+        var regBuyer = new PurchasedAd
+        {
+            ProfileId = user.Id,
+            AdId = adId,
+            VendorId = ad.VendorId
+        };
+
+        var buyerId = await _unitOfWork.Context.Buyers
+            .AsNoTracking()
+            .Where(x => x.ProfileId == user.Id)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+        
+        if(buyerId != Guid.Empty) regBuyer.BuyerId = buyerId;
+
+        await _unitOfWork.Context.AddAsync(regBuyer);
+        await _unitOfWork.CommitAsync();
+
+        // Update enrollment status in course engagement
+        await AdEngagementAsync(adId, user.Id, true);
+       
+        await _notificationService.AdPurchaseNoticeEmailAsync(ad.VendorEmail, ad.VendorFirstName, user.FullName, ad.Title);
+
+        return _responseService.SuccessResponse(adId.ToString(), "Ad purchased successfully...");
     }
 
 }
