@@ -2,6 +2,7 @@
 
 using AlutaMartAPI.BackgroundServices;
 using AlutaMartAPI.Database;
+using AspNetCoreRateLimit;
 
 namespace AlutaMartAPI.Services
 {
@@ -31,6 +32,11 @@ namespace AlutaMartAPI.Services
 
             services.AddHostedService<ExpiredAdCheckService>();
 
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            services.AddInMemoryRateLimiting();
+
 
             services.AddMemoryCache();
 
@@ -47,6 +53,19 @@ namespace AlutaMartAPI.Services
                 ];
                 options.EnableForHttps = true;
             });
+
+            services.Configure<IpRateLimitOptions>(options =>
+            {
+                options.GeneralRules =
+                [
+                    new() {
+                        // Update to match your route
+                        Endpoint = "*:/v1/auth/login", // Limit for the login endpoint
+                        Limit = 5, // Max 5 requests
+                        Period = "5m" // Per 1 minute
+                    }
+                ];
+            });            
         }
 
         public static void ResponseCompression(this IServiceCollection services)
