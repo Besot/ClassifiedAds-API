@@ -40,5 +40,8 @@ namespace AlutaMartAPI.Controllers;
         public async Task<IActionResult> DeleteCourse(Guid adId) 
             => Ok(await adsService.DeleteAdAsync(adId, CurrentUser.VendorId.Value, CurrentUser.Access == Roles.AdminUser));
 
+        [HttpPost("Buy/{adId}"), BlockAccess(Roles.SuperAdmin)]
+        [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
+        public async Task<IActionResult> Purchase(Guid adId) => Ok(await adsService.PurchaseAsync(CurrentUser, adId));
 
     }
