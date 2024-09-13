@@ -10,7 +10,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 	public virtual DbSet<Ads> Ads { get; set; }
 	public virtual DbSet<AdsCategory> AdsCategories { get; set; }
 	public virtual DbSet<AdsImage> AdsImages { get; set; }
-		public virtual DbSet<AdsVideo> AdsVideos { get; set; }
+	public virtual DbSet<AdsVideo> AdsVideos { get; set; }
 
 
 	public virtual DbSet<AdsComment> AdsComments { get; set; }
@@ -31,6 +31,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 	public virtual DbSet<WaitingUser> WaitingUsers { get; set; }
 
 	public virtual DbSet<BuyerInterestedInstitution> BuyerInterestedInstitutions { get; set; }
+
+	public virtual DbSet<PaymentInflow> PaymentInflows { get; set; }
+	public virtual DbSet<PaymentOutflow> PaymentOutflows { get; set; }
+	public virtual DbSet<Transaction> Transactions { get; set; }
+	public virtual DbSet<Wallet> Wallets { get; set; }
+	public virtual DbSet<ProcessorDataLog> ProcessorDataLogs { get; set; }
+	public virtual DbSet<AdsEngagement> AdsEngagements { get; set; }
+
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
@@ -70,6 +78,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 		modelBuilder.Entity<IdentityCard>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<WaitingUser>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<BuyerInterestedInstitution>().HasQueryFilter(p => !p.IsDeleted);
+
+		modelBuilder.Entity<PaymentInflow>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<PaymentOutflow>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<Transaction>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<Wallet>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<ProcessorDataLog>().HasQueryFilter(p => !p.IsDeleted);
 
 
 		#endregion

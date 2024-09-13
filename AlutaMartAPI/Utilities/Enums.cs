@@ -123,3 +123,39 @@ public enum AdsStatus
         [Display(Name = "Expired")]
         Expired
     }
+
+	public enum PaymentStatus
+{
+	[Display(Name = "Initiated")]
+	Initiated = 1,
+
+	[Display(Name = "Processing")]
+	Processing,
+
+	[Display(Name = "Successful")]
+	Successful,
+
+	[Display(Name = "Failed")]
+	Failed,
+
+	[Display(Name = "Cancled")]
+	Cancled
+}
+
+public enum PaymentType
+{
+	[Display(Name = "Credit")]
+	Inflow = 1,
+
+	[Display(Name = "Debit")]
+	Outflow
+}
+
+public enum PaymentProcessor
+{
+	[Display(Name = "Stripe")]
+	Stripe = 1,
+
+	[Display(Name = "Paystack")]
+	Paystack
+}
