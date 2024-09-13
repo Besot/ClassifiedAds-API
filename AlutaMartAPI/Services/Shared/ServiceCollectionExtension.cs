@@ -29,6 +29,7 @@ namespace AlutaMartAPI.Services
             services.AddTransient<IBaseHttpClient, BaseHttpClient>();
             services.AddTransient<INotificationService, NotificationService>();
             services.AddTransient<IMailSenderService, MailSenderService>();
+            services.AddTransient<IPaystackService, PaystackService>();
 
             services.AddHostedService<ExpiredAdCheckService>();
 
