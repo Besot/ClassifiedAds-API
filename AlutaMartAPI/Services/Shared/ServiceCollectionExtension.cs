@@ -1,5 +1,6 @@
 
 
+using AlutaMartAPI.BackgroundServices;
 using AlutaMartAPI.Database;
 
 namespace AlutaMartAPI.Services
@@ -27,6 +28,9 @@ namespace AlutaMartAPI.Services
             services.AddTransient<IBaseHttpClient, BaseHttpClient>();
             services.AddTransient<INotificationService, NotificationService>();
             services.AddTransient<IMailSenderService, MailSenderService>();
+
+            services.AddHostedService<ExpiredAdCheckService>();
+
 
             services.AddMemoryCache();
 
