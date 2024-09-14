@@ -148,7 +148,7 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
 		};
 	}
 
-	public async Task AdEngagementAsync(Guid adId, Guid profileId, bool isEnrolling = false)
+	public async Task AdEngagementAsync(Guid adId, Guid profileId, bool isPurchasing = false)
     {
         var adEngagement = await _unitOfWork.Context.AdsEngagements
             .FirstOrDefaultAsync(x => x.AdId == adId && x.ProfileId == profileId);
@@ -160,7 +160,7 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
                 AdId = adId,
                 ProfileId = profileId,
                 VisitCount = 1,
-                IsEnrolled = isEnrolling
+                IsPurchased = isPurchasing
             };
             await _unitOfWork.Context.AdsEngagements.AddAsync(adEngagement);
             await _unitOfWork.CommitAsync();
@@ -172,8 +172,8 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
             var parameters = new[]
             {
                 new NpgsqlParameter("@VisitCount", adEngagement.VisitCount),
-                new NpgsqlParameter("@IsEnrolled", isEnrolling),
-                new NpgsqlParameter("@CourseId", adId),
+                new NpgsqlParameter("@IsPurchased", isPurchasing),
+                new NpgsqlParameter("@AdId", adId),
                 new NpgsqlParameter("@ProfileId", profileId)
             };
 

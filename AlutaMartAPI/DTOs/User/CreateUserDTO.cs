@@ -25,8 +25,8 @@ public class CreateUserDTO
 	[Required(ErrorMessage ="PhoneNumber is required")]
     [MaxLength(14, ErrorMessage ="PhoneNumber should not be more than 14 characters")]
     [MinLength(8, ErrorMessage ="PhoneNumber should not be less than 8 characters")]
+	[PhoneNumberValidator(ErrorMessage ="PhoneNumber should be  numbers only")]
     public string PhoneNumber { get; set; }
-
 
 	[Required(ErrorMessage ="Password is required")]
 	[MaxLength(60, ErrorMessage ="Password should not be more than 60 characters")]

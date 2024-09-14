@@ -479,16 +479,21 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             .Where(x => x.ProfileId == user.Id)
             .Select(x => x.Id)
             .FirstOrDefaultAsync();
-        
+
+        var adExistIncart = await _unitOfWork.Context.Carts.AsNoTracking().AnyAsync(x => x.AdsId == adId);
+            
         if(buyerId != Guid.Empty) regBuyer.BuyerId = buyerId;
 
         await _unitOfWork.Context.AddAsync(regBuyer);
         await _unitOfWork.CommitAsync();
 
-        // Update enrollment status in course engagement
+        // Update purchased status in Ad engagement
         await AdEngagementAsync(adId, user.Id, true);
        
         await _notificationService.AdPurchaseNoticeEmailAsync(ad.VendorEmail, ad.VendorFirstName, user.FullName, ad.Title);
+        
+        if(adExistIncart)
+        await _unitOfWork.Context.Database.ExecuteSqlRawAsync(CartSQL.RemoveAdFromCart, new NpgsqlParameter("@adId", adId));
 
         return _responseService.SuccessResponse(adId.ToString(), "Ad purchased successfully...");
     }

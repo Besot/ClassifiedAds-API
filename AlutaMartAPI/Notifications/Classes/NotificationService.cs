@@ -68,18 +68,18 @@ public class NotificationService(IWebHostEnvironment webHostEnvironment, IMailSe
 		var fullPath = Path.Combine(_webHostEnv.WebRootPath, "vendor_onboarding_email.html");
 		var htmlMessage = File.ReadAllText(fullPath);
 		htmlMessage = htmlMessage.Replace("{{firstName}}", firstName.ToTitleCase());
-		htmlMessage = htmlMessage.Replace("{{frontendBaseUrl}}", Constants.ExpertFrontendBaseUrl);
+		htmlMessage = htmlMessage.Replace("{{frontendBaseUrl}}", Constants.FrontendBaseUrl);
 
 		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email, "Welcome to AlutaMart as a Vendor!");
 	}
 
 	public async Task AdPurchaseNoticeEmailAsync(string email, string vendorFirstName, string buyerFullName, string AdTitle)
     {
-		var fullPath = Path.Combine(_webHostEnv.WebRootPath, "course_enrollment_notice.html");
+		var fullPath = Path.Combine(_webHostEnv.WebRootPath, "ad_purchase_notice.html");
 		var htmlMessage = File.ReadAllText(fullPath);
-		htmlMessage = htmlMessage.Replace("{{expertFirstName}}", vendorFirstName.ToTitleCase());
-		htmlMessage = htmlMessage.Replace("{{learnerFullName}}", buyerFullName.ToTitleCase());
-		htmlMessage = htmlMessage.Replace("{{courseTitle}}", AdTitle.ToTitleCase());
+		htmlMessage = htmlMessage.Replace("{{vendorFirstName}}", vendorFirstName.ToTitleCase());
+		htmlMessage = htmlMessage.Replace("{{buyerFullName}}", buyerFullName.ToTitleCase());
+		htmlMessage = htmlMessage.Replace("{{adTitle}}", AdTitle.ToTitleCase());
 		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email,  "Ad Purchase Notice!");
     }
 }

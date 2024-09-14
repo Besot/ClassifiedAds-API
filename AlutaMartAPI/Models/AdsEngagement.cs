@@ -7,5 +7,5 @@ public class AdsEngagement :BaseEntity
     public Guid ProfileId { get; set; }
     public virtual Profile Profile { get; set; }
     public int VisitCount { get; set; }
-    public bool IsEnrolled { get; set; }
+    public bool IsPurchased { get; set; }
 }
