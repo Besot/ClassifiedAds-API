@@ -13,6 +13,6 @@ namespace AlutaMartAPI.SQLQueries;
             LIMIT @batchSize";
 
          public static string UpdateAdEngagement => @"UPDATE ""AdsEngagements"" SET ""VisitCount"" = @VisitCount, 
-                ""IsEnrolled"" = CASE WHEN @IsEnrolled = true THEN true ELSE ""IsEnrolled"" END 
+                ""IsPurchased"" = CASE WHEN @IsPurchased = true THEN true ELSE ""IsPurchased"" END 
                 WHERE ""AdId"" = @AdId AND ""ProfileId"" = @ProfileId";
     }
