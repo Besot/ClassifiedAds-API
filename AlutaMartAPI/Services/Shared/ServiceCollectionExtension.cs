@@ -2,6 +2,7 @@
 
 using AlutaMartAPI.BackgroundServices;
 using AlutaMartAPI.Database;
+using ALUTAMARTAPI.Services;
 using AspNetCoreRateLimit;
 
 namespace AlutaMartAPI.Services
@@ -38,6 +39,16 @@ namespace AlutaMartAPI.Services
             services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             services.AddInMemoryRateLimiting();
+
+            services.AddHttpClient<IGeocodingService, GeocodingService>(client =>
+        {
+            // Optionally set base address or other HttpClient settings
+        });
+
+        // Register the Google API key from configuration
+        services.AddSingleton<IGeocodingService>(provider => new GeocodingService(
+            provider.GetRequiredService<HttpClient>(),
+            "<YOUR_GOOGLE_API_KEY>")); // Replace with your API key
 
 
             services.AddMemoryCache();

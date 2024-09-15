@@ -7,8 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace AlutaMartAPI.Services;
-public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseService, IPaystackService _paystackService, INotificationService _notificationService) : BaseDBService(_unitOfWork, _responseService), IAdsService
+public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfWork, IResponseService _responseService, IPaystackService _paystackService, INotificationService _notificationService) : BaseDBService(_unitOfWork, _responseService), IAdsService
 {
+
+        private readonly IGeocodingService _geocodingService = geocodingService;
+
+    
 
     public async Task<ServiceResponse<string>> CreateAdsAsync(CreateAdsDTO model, UserDTO user)
     {
@@ -30,7 +34,9 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
         // Fetch vendor, plan tier, currency, and ads category in one go
         var vendor = await _unitOfWork.Context.Vendors
             .AsNoTracking()
-            .FirstOrDefaultAsync(v => v.Id == user.VendorId.Value);
+                .Where(x => x.Id == user.VendorId.Value)
+                .Select(x => new{ x.Id, x.VendorInstitution.Name })
+            .FirstOrDefaultAsync();
 
         var vendorPlan = await _unitOfWork.Context.VendorPlan
             .AsNoTracking()
@@ -62,6 +68,10 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
         if (model.IsFeatured && featuredAdsCount >= vendorPlan.PlanTier.MaxFeatured)
             return _responseService.ErrorResponse<string>("Featured ad limit reached for the current plan tier");
 
+         // Use the GeocodingService to get the coordinates of the vendor's address
+        var (Latitude, Longitude) = await _geocodingService.GetCoordinates(vendor.Name);
+
+
         var ad = new Ads
         {
             Title = model.Title,
@@ -76,6 +86,8 @@ public class AdsService(IUnitOfWork _unitOfWork, IResponseService _responseServi
             IsFeatured = model.IsFeatured,
             AdsCondition = model.AdsCondition,
             Status = AdsStatus.Active,
+            Latitude = Latitude,
+            Longitude = Longitude,
             Discount = model.DiscountPrice != null ? Discount.Discounted : Discount.FixedPrice,
             FeaturedExpiryDate =  vendorPlan.PlanTier.Name == "free tier" ? null :  DateTimeOffset.UtcNow.AddMonths(1)
         };
