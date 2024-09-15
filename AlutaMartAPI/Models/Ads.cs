@@ -26,4 +26,6 @@ public class Ads :BaseEntity
 
         public Guid CurrencyId { get; set; }
         public virtual Currency Currency { get; set; }
+         public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
