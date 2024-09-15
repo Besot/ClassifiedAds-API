@@ -56,7 +56,7 @@ public static class Constants
     public static string GoogleClientSecrete => Environment.GetEnvironmentVariable("GOOGLE_SECRETE_KEY");
     public static string GoogleCalendarScope => "https://www.googleapis.com/auth/calendar";
 
-    public static string GoogleApiKey => Environment.GetEnvironmentVariable("GOOGLE_API_KEY");
+    public static string ApiKey => Environment.GetEnvironmentVariable("API_KEY");
 
     public static string PaystackSecreteKey => Environment.GetEnvironmentVariable("PAYSTACK_SECRETE_KEY");
 

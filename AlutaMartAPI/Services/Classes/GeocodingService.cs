@@ -1,3 +1,4 @@
+using AlutaMartAPI.Utilities;
 using Newtonsoft.Json.Linq;
 
 namespace AlutaMartAPI.Services;
@@ -12,7 +13,7 @@ public class GeocodingService(HttpClient httpClient, string googleApiKey) : IGeo
             string formattedAddress = Uri.EscapeDataString(address);
 
             // Google Geocoding API endpoint
-            string requestUrl = $"https://maps.googleapis.com/maps/api/geocode/json?address={formattedAddress}&key={_googleApiKey}";
+            string requestUrl = $"https://geocode.maps.co/search?q={address}&api_key={Constants.ApiKey}";
 
             // Send HTTP request to Google API
             HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
