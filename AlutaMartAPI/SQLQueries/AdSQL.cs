@@ -8,9 +8,17 @@ namespace AlutaMartAPI.SQLQueries;
 
         public static string DeleteAd => @"UPDATE ""Ads"" set ""Deleted"" = now(), ""IsDeleted"" = true  WHERE ""Id"" = @adId";
 
-        public static string SetIsFeaturedFalseForExpiredAds => @"UPDATE ""Ads"" set ""IsFeatured"" = false
-            WHERE ""FeaturedExpiryDate"" < now() AND ""IsFeatured"" = true
-            LIMIT @batchSize";
+        public static string SetIsFeaturedFalseForExpiredAds = @"
+                WITH ExpiredAds AS (
+                    SELECT ""Id""
+                    FROM ""Ads""
+                    WHERE ""FeaturedExpiryDate"" < now() AND ""IsFeatured"" = true
+                    LIMIT @batchSize
+                )
+                UPDATE ""Ads""
+                SET ""IsFeatured"" = false
+                WHERE ""Id"" IN (SELECT ""Id"" FROM ExpiredAds);
+                ";
 
          public static string UpdateAdEngagement => @"UPDATE ""AdsEngagements"" SET ""VisitCount"" = @VisitCount, 
                 ""IsPurchased"" = CASE WHEN @IsPurchased = true THEN true ELSE ""IsPurchased"" END 

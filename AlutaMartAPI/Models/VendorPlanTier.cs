@@ -7,7 +7,7 @@ namespace AlutaMartAPI.Models;
         public Guid VendorId { get; set; }
         public virtual Vendor Vendor { get; set; }
         
-        public Guid PlanTierId { get; set; }
+        public Guid? PlanTierId { get; set; }
         public virtual PlanTier PlanTier { get; set; }
         public DateTimeOffset? ExpiryDate { get; set; }
 

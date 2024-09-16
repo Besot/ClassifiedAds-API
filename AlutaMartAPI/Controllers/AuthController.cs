@@ -19,8 +19,8 @@ public class AuthController(IAuthService authService) : BaseController
 
     [HttpPost("Create-Account")]
 	[ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
-	public async Task<IActionResult> SignUpUser([FromBody] CreateUserDTO model, bool isLearner = false) 
-		=> Ok(await  authService.CreateAccountAsync(model, isLearner));
+	public async Task<IActionResult> SignUpUser([FromBody] CreateUserDTO model, bool isBuyer = false) 
+		=> Ok(await  authService.CreateAccountAsync(model, isBuyer));
 
 	[HttpPost("Verify-Account/{code}")]
 	[ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]

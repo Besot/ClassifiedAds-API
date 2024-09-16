@@ -104,6 +104,6 @@ public class Startup
 
 		app.UseEndpoints(endpoints => endpoints.MapControllers());
 		app.InitializeDatabase();
-		app.SeedDataToDatabase();
+		// app.SeedDataToDatabase();
 	}
 }

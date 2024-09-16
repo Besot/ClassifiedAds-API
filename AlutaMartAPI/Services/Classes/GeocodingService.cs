@@ -2,41 +2,43 @@ using AlutaMartAPI.Utilities;
 using Newtonsoft.Json.Linq;
 
 namespace AlutaMartAPI.Services;
-public class GeocodingService(HttpClient httpClient, string googleApiKey) : IGeocodingService
+public class GeocodingService(HttpClient httpClient, string apiKey) : IGeocodingService
 {
     private readonly HttpClient _httpClient = httpClient;
-        private readonly string _googleApiKey = googleApiKey;
+        private readonly string _apiKey = apiKey;
 
     public async Task<(double Latitude, double Longitude)> GetCoordinates(string address)
     {
-         // Format the address for URL encoding
-            string formattedAddress = Uri.EscapeDataString(address);
+        // Format the address for URL encoding
+        string formattedAddress = Uri.EscapeDataString(address);
 
-            // Google Geocoding API endpoint
-            string requestUrl = $"https://geocode.maps.co/search?q={address}&api_key={Constants.ApiKey}";
+        // Geocoding API endpoint (adjust based on the correct API you're using)
+        string requestUrl = $"https://geocode.maps.co/search?q={formattedAddress}&api_key={Constants.ApiKey}";
 
-            // Send HTTP request to Google API
-            HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
+        // Send HTTP request to Geocoding API
+        HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception($"Error calling Google Geocoding API: {response.StatusCode}");
-            }
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Error calling Geocoding API: {response.StatusCode}");
+        }
+        string responseContent = await response.Content.ReadAsStringAsync();
 
-            string responseContent = await response.Content.ReadAsStringAsync();
+        // Parse the JSON response - handle array response
+        var jsonArray = JArray.Parse(responseContent);
+        if (!jsonArray.Any())
+        {
+            throw new Exception("No location found for the specified address.");
+        }
+        // Assuming the first result is the most relevant
+        var firstResult = jsonArray[0];
+        var latitude = (double?)firstResult["lat"];
+        var longitude = (double?)firstResult["lon"];
 
-            // Parse the JSON response
-            JObject jsonResponse = JObject.Parse(responseContent);
-            var location = jsonResponse["results"]?[0]?["geometry"]?["location"];
-
-            if (location == null)
-            {
-                throw new Exception("No location found for the specified address.");
-            }
-
-            double latitude = (double)location["lat"];
-            double longitude = (double)location["lng"];
-
-            return (latitude, longitude);
+        if (latitude == null || longitude == null)
+        {
+            throw new Exception("Latitude or Longitude information is missing.");
+        }
+        return (latitude.Value, longitude.Value);
     }
 }

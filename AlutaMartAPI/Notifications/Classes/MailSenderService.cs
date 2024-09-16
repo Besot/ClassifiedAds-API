@@ -12,7 +12,7 @@ public class MailSenderService(IBaseHttpClient httpClient, ILoggerFactory logger
     {
         var model = new PostMarkAppSenderDTO
         {
-            From = "notifications@alutamart.co",
+            From = "emmanuel.bobade@decagon.dev",
             To = to,
             MessageStream = "outbound",
             HtmlBody = message,

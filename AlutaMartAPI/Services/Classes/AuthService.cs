@@ -147,7 +147,7 @@ namespace AlutaMartAPI.Services;
 		return _responseService.SuccessResponse("Password reset request was successful");
 	}
 
-	public async Task<ServiceResponse<string>> CreateAccountAsync(CreateUserDTO model, bool isLearner = false)
+	public async Task<ServiceResponse<string>> CreateAccountAsync(CreateUserDTO model, bool isBuyer = false)
 	{
 		if(!model.Email.IsValidEmail()) return _responseService.ErrorResponse<string>("Invalid email");
 		model.Password = model.Password.TrimAllSpace();
@@ -174,11 +174,10 @@ namespace AlutaMartAPI.Services;
 			TokenResetTime = date,
 			Token = AppUtilities.RandomInt(9)
 		};
-		var buyer = new Buyer
-		{
-			ProfileId = profile.Id,
-			AdPurchasedCount = 0,
-		};
+		// var buyerInsertResult = await _unitOfWork.Context.Database.ExecuteSqlRawAsync(
+        //     BuyerSQL.InsertBuyer,
+        //     new NpgsqlParameter("@profileId", profile.Id)
+        // );
 
 		List<string> passwordError = [];
 
@@ -194,12 +193,12 @@ namespace AlutaMartAPI.Services;
 		if(!createResp.Succeeded) return _responseService.ErrorResponse<string>(string.Join(",", createResp.Errors.Select(x => x.Description)));
 
 		await _userManager.AddPasswordAsync(profile, model.Password);
-
-		_notificationService.UserEmailVerificationAsync(model.Email, model.FirstName, profile.Token.ToString(), isLearner).Forget();
+	
+		_notificationService.UserEmailVerificationAsync(model.Email, model.FirstName, profile.Token.ToString(), isBuyer).Forget();
 		return _responseService.SuccessResponse("user account created successfully...");
 	}
 
-	public async Task<ServiceResponse<string>> ResendEmailVerificationAsync(UserDTO user, bool isLearner = false)
+	public async Task<ServiceResponse<string>> ResendEmailVerificationAsync(UserDTO user, bool isBuyer = false)
 	{
 		var profile = await _unitOfWork.Context.Profiles
 			.AsNoTracking()
@@ -219,7 +218,7 @@ namespace AlutaMartAPI.Services;
         if(profile.Token <= 0 || !profile.TokenResetTime.HasValue || (DateTime.UtcNow - profile.TokenResetTime.Value).TotalMinutes > 20)
         {
 			var token = AppUtilities.RandomLong(9);
-			_notificationService.UserEmailVerificationAsync(user.Email, user.FirstName, token.ToString(), isLearner).Forget();
+			_notificationService.UserEmailVerificationAsync(user.Email, user.FirstName, token.ToString(), isBuyer).Forget();
 			var parameters = new List<object>
 			{
 				new NpgsqlParameter("@id", user.Id),

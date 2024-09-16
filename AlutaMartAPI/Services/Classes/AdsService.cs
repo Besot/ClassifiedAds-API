@@ -28,7 +28,7 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
             return _responseService.ErrorResponse<string>("Ads category is required");
 
         // Validate image URL
-        if (!model.AdsImageUrls.Contains("s3.eu-central-1.amazonaws.com"))
+        if (!model.AdsImageUrls.All(url => url.Contains("s3.eu-central-1.amazonaws.com")))
             return _responseService.ErrorResponse<string>("Invalid image URL");
 
         // Fetch vendor, plan tier, currency, and ads category in one go
@@ -40,13 +40,29 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
 
         var vendorPlan = await _unitOfWork.Context.VendorPlan
             .AsNoTracking()
-            .FirstOrDefaultAsync(v => v.VendorId == user.VendorId.Value);
+                .Where(v => v.VendorId == user.VendorId.Value)
+                .Select(v => new{ v.Id, v.PlanTier})
+            .FirstOrDefaultAsync();
+
+        var vendorAddress = vendor.Name;
 
         var isCurrencyValid = await _unitOfWork.Context.Currencies.AnyAsync(c => c.Id == model.CurrencyId.Value);
         var isAdsCategoryValid = await _unitOfWork.Context.AdsCategories.AnyAsync(ac => ac.Id == model.AdsCategoryId.Value);
 
         if (vendor == null || vendorPlan == null)
             return _responseService.ErrorResponse<string>("Vendor or plan tier not found");
+
+        // Ensure vendorPlan and PlanTier are valid
+        if (vendor == null || vendorPlan == null)
+            return _responseService.ErrorResponse<string>("Vendor or plan tier not found");
+
+        if (vendorPlan.PlanTier == null)
+            return _responseService.ErrorResponse<string>("Plan tier not found");
+
+        // Ensure vendor name is not null or empty before geocoding
+        if (string.IsNullOrEmpty(vendorAddress))
+            return _responseService.ErrorResponse<string>("Vendor address is invalid");
+
 
         if (!isCurrencyValid)
             return _responseService.ErrorResponse<string>("Currency selected is invalid");
@@ -58,7 +74,7 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
         var adsCount = await _unitOfWork.Context.Ads.CountAsync(a => a.VendorId == user.VendorId.Value && !a.IsDeleted);
         var featuredAdsCount = await _unitOfWork.Context.Ads.CountAsync(a => a.VendorId == user.VendorId.Value && a.IsFeatured && !a.IsDeleted);
 
-        if (adsCount >= vendorPlan.PlanTier.MaxAds)
+        if (adsCount != 0 && adsCount >= vendorPlan.PlanTier.MaxAds)
             return _responseService.ErrorResponse<string>("Ad creation limit reached for the current plan tier");
 
         var imageCount = model.AdsImageUrls.ToList().Count;
@@ -68,10 +84,10 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
         if (model.IsFeatured && featuredAdsCount >= vendorPlan.PlanTier.MaxFeatured)
             return _responseService.ErrorResponse<string>("Featured ad limit reached for the current plan tier");
 
-         // Use the GeocodingService to get the coordinates of the vendor's address
-        var (Latitude, Longitude) = await _geocodingService.GetCoordinates(vendor.Name);
 
-
+         // Use the GeocodingService to get the coordinates of the address
+        var (Latitude, Longitude) = await _geocodingService.GetCoordinates(vendorAddress);
+        
         var ad = new Ads
         {
             Title = model.Title,
@@ -358,21 +374,7 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
         return _responseService.SuccessResponse("Ad deleted successfully");
     }
 
-    public async Task<ServiceResponse<int>> SetIsFeaturedFalseForExpiredAdsAsync(int batchSize)
-    {
-        try
-        {
-            var affectedRows = await _unitOfWork.Context.Database.ExecuteSqlRawAsync(AdSQL.SetIsFeaturedFalseForExpiredAds, new NpgsqlParameter("@batchSize", batchSize)
-            );
-
-            await _unitOfWork.CommitAsync();
-            return _responseService.SuccessResponse<int>(affectedRows, "Successfully updated expired featured ads.");
-        }
-        catch (Exception ex)
-        {
-            return _responseService.ErrorResponse<int>($"Error updating expired featured ads: {ex.Message}");
-        }
-    }
+   
 
     public async Task<ServiceResponse<string>> PurchaseAsync(UserDTO user, Guid adId, int quantity)
     {

@@ -1,5 +1,3 @@
-
-using AlutaMartAPI.BackgroundServices;
 using AlutaMartAPI.Database;
 using AlutaMartAPI.Utilities;
 using AspNetCoreRateLimit;
@@ -31,6 +29,7 @@ namespace AlutaMartAPI.Services
             services.AddTransient<IMailSenderService, MailSenderService>();
             services.AddTransient<IPaystackService, PaystackService>();
             services.AddScoped<IWalletService, WalletServices>();
+            services.AddSingleton<ExpiredAdCheckService>();
 
             services.AddHostedService<ExpiredAdCheckService>();
 
@@ -40,14 +39,14 @@ namespace AlutaMartAPI.Services
             services.AddInMemoryRateLimiting();
 
             services.AddHttpClient<IGeocodingService, GeocodingService>(client =>
-        {
-            // Optionally set base address or other HttpClient settings
-        });
+            {
+                // Optionally set base address or other HttpClient settings
+            });
 
-        // Register the Google API key from configuration
-        services.AddSingleton<IGeocodingService>(provider => new GeocodingService(
-            provider.GetRequiredService<HttpClient>(),
-            Constants.ApiKey)); // Replace with your API key
+            // Register the Google API key from configuration
+            services.AddSingleton<IGeocodingService>(provider => new GeocodingService(
+                provider.GetRequiredService<HttpClient>(),
+                Constants.ApiKey)); // Replace with your API key
 
 
             services.AddMemoryCache();
