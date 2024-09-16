@@ -26,13 +26,13 @@ public class NotificationService(IWebHostEnvironment webHostEnvironment, IMailSe
 		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email, "Account Updated Successfully");
 	}
 
-	public async Task UserEmailVerificationAsync(string email, string firstName, string token, bool isLearner = false)
+	public async Task UserEmailVerificationAsync(string email, string firstName, string token, bool isBuyer = false)
 	{
 		var fullPath = Path.Combine(_webHostEnv.WebRootPath, "user_signup_email.html");
 		var htmlMessage = File.ReadAllText(fullPath);
 		htmlMessage = htmlMessage.Replace("{{firstName}}", firstName.ToTitleCase());
 		htmlMessage = htmlMessage.Replace("{{code}}", token);
-		htmlMessage = isLearner ? htmlMessage.Replace("{{frontendBaseUrl}}", Constants.LearnerFrontendBaseUrl) 
+		htmlMessage = isBuyer ? htmlMessage.Replace("{{frontendBaseUrl}}", Constants.FrontendBaseUrl) 
 			: htmlMessage.Replace("{{frontendBaseUrl}}", Constants.ExpertFrontendBaseUrl);
 
 		await _mailSenderService.SendByPostMarkAppAsync(htmlMessage, email, "Email Verification");

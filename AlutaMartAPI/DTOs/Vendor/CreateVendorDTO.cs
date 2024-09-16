@@ -37,6 +37,4 @@ namespace AlutaMartAPI.DTOs;
         [MaxLength(11, ErrorMessage ="NIN should not be more than 11 characters")]
 	    [MinLength(11, ErrorMessage ="NIN should not be less than 11 characters")]        
         public string NIN { get; set; }
-
-        public Guid? PlanTierId { get; set; }
     }
