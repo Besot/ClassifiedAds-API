@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using AlutaMartAPI.Database;
 using AlutaMartAPI.ModelObjects;
 using AlutaMartAPI.Utilities;
-using AlutaMartAPI.Models;
 
 namespace AlutaMartAPI.Services
 {

@@ -4,7 +4,7 @@ using AlutaMartAPI.Utilities;
 using AlutaMartAPI.ModelObjects;
 using AlutaMartAPI.Controllers;
 
-namespace PatherAPI.Controllers;
+namespace AlutaMartAPI.Controllers;
 
 public class DashboardController(IDashboardService dashboardService) : BaseController
 {

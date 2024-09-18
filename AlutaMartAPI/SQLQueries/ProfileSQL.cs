@@ -9,4 +9,9 @@ namespace AlutaMartAPI.SQLQueries;
 	public static string SetAsVendor => @"UPDATE ""Profiles"" set ""Modified"" = now(), ""Role"" = 2 WHERE ""Id"" = @id";
 
 	public static string UpdateToken => @"UPDATE ""Profiles"" set ""Token"" = @token, ""TokenResetTime"" = now(), ""Modified"" = now() WHERE ""Id"" = @id";
+
+	public static string SetProfileInactive => @"UPDATE ""Profiles"" SET ""IsActive"" = false WHERE ""Id"" = @id";
+
+	public static string SetProfileActive => @"UPDATE ""Profiles"" SET ""IsActive"" = true WHERE ""Id"" = @id";
+
 }
