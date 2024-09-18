@@ -1,4 +1,5 @@
 using AlutaMartAPI.DTOs;
+using AlutaMartAPI.ModelObjects;
 using AlutaMartAPI.Utilities;
 
 namespace AlutaMartAPI.Services;
@@ -6,4 +7,5 @@ namespace AlutaMartAPI.Services;
     {
         Task<ServiceResponse<string>> CreateAdminAsync(CreateAdminDTO model);
         Task<ServiceResponse<string>> SetAdminProfileStateAsync(Guid profileId, bool isActive);
+        Task<ServiceResponse<PagedList<GetAdminDTO>>> GetAsync(int page = 1, int pageSize = 15);
     }

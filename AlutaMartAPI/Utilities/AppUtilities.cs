@@ -179,4 +179,16 @@ public static class AppUtilities
 	{
 		return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input);
 	}
+
+	public static string GetDesignation(Roles role)
+    {
+        return role switch
+        {
+            Roles.SuperAdmin => "IT",
+            Roles.PlatformManager => "Support",
+            Roles.BusinessManager => "Management",
+            Roles.AdminUser => "Admin User",
+            _ => "Unknown"
+        };
+    }
 }

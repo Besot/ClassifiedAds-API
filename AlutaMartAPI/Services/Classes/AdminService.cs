@@ -1,5 +1,6 @@
 using AlutaMartAPI.Database;
 using AlutaMartAPI.DTOs;
+using AlutaMartAPI.ModelObjects;
 using AlutaMartAPI.Models;
 using AlutaMartAPI.SQLQueries;
 using AlutaMartAPI.Utilities;
@@ -64,6 +65,25 @@ public class AdminService(IUnitOfWork _unitOfWork, IResponseService _responseSer
 			: "Profile Deactivated Successfully";
 
 		return _responseService.SuccessResponse(successMessage);
-           
     }
+
+	public async Task<ServiceResponse<PagedList<GetAdminDTO>>> GetAsync(int page = 1, int pageSize = 15)
+	{
+		var adminRoles = new[] { Roles.SuperAdmin, Roles.PlatformManager, Roles.BusinessManager, Roles.AdminUser };
+
+		var admins = _unitOfWork.Context.Profiles
+			.AsNoTracking()
+			.Where(x => adminRoles.Contains(x.Role))
+			.Select(x => new GetAdminDTO
+			{
+				ProfileId = x.Id,
+				FullName = $"{x.FirstName} {x.LastName}",
+				Email = x.Email,
+				Role = x.Role,
+            	Designation = AppUtilities.GetDesignation(x.Role),
+				IsActive = x.IsActive
+			});
+
+		return await _responseService.PagedResponseAsync(admins, page, pageSize, "Admins");
+	}
 }
