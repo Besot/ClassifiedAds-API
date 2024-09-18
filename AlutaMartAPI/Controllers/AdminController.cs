@@ -22,5 +22,7 @@ namespace AlutaMartAPI.Controllers;
 	public async Task<IActionResult> GetAdmins(int page = 1, int pageSize = 15) 
 		=> Ok(await adminService.GetAsync( page, pageSize));
 
-
+	[HttpGet("{profileId}"), AllowAccess(Roles.SuperAdmin)]
+	[ProducesResponseType(type: typeof(ServiceResponse<GetAdminDTO>), statusCode: 200)]
+	public async Task<IActionResult> GetById(Guid profileId) => Ok(await adminService.GetByAdminIdAsync(profileId));
 }

@@ -86,4 +86,21 @@ public class AdminService(IUnitOfWork _unitOfWork, IResponseService _responseSer
 
 		return await _responseService.PagedResponseAsync(admins, page, pageSize, "Admins");
 	}
+
+    public async Task<ServiceResponse<GetAdminDTO>> GetByAdminIdAsync(Guid profileId)
+    {
+        var admin = await _unitOfWork.Context.Profiles
+            .AsNoTracking()
+            .Where(x => x.Id == profileId)
+            .Select(x => new GetAdminDTO
+            {
+                FullName = $"{x.FirstName} {x.LastName}",
+                Email = x.Email,
+                Role = x.Role,
+            	Designation = AppUtilities.GetDesignation(x.Role),
+				IsActive = x.IsActive
+            })
+            .FirstOrDefaultAsync();
+        return _responseService.SuccessResponse(admin);
+    }
 }
