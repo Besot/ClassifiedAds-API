@@ -47,4 +47,23 @@ public class AdminService(IUnitOfWork _unitOfWork, IResponseService _responseSer
 		_notificationService.SetPasswordEmailAsync(model.Email, profile.FirstName, model.AdminRole, profile.Token.ToString()).Forget();
 		
 		return _responseService.SuccessResponse($"{model.AdminRole.Name()} created and set password link sent successful");
-    }}
+    }
+
+	public async Task<ServiceResponse<string>> SetAdminProfileStateAsync(Guid profileId, bool isActive)
+    {
+        var isProfileIdExist = await _unitOfWork.Context.Profiles.AnyAsync(x => x.Id == profileId);
+        if(!isProfileIdExist) return _responseService.ErrorResponse<string>("Invalid Request!");
+		string sqlQuery = isActive 
+        ? ProfileSQL.SetProfileActive 
+        : ProfileSQL.SetProfileInactive;
+
+		await _unitOfWork.Context.Database.ExecuteSqlRawAsync(sqlQuery, new NpgsqlParameter("@id", profileId));
+
+		string successMessage = isActive 
+			? "Profile Activated Successfully" 
+			: "Profile Deactivated Successfully";
+
+		return _responseService.SuccessResponse(successMessage);
+           
+    }
+}

@@ -18,50 +18,6 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
 	protected readonly IUnitOfWork _unitOfWork = unitOfWork;
 	protected readonly IResponseService _responseService = responseService;
 
-    public TokenResponseDTO GetBearerToken(Profile model, int tokenValidity)
-	{
-		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Constants.JWTKey)) { KeyId = Constants.JWTKeyId };
-		var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);
-
-		var profile = new UserDTO
-		{
-			Id = model.Id,
-			FirstName = model.FirstName,
-			LastName = model.LastName,
-			Email = model.Email,
-			Phone = model.PhoneNumber,
-			Access = model.Role,
-			IsActive = model.IsActive,
-		};
-
-		var claims = new List<Claim>
-		{
-			new(JwtRegisteredClaimNames.Sub, profile.ToJson()),
-			new(JwtRegisteredClaimNames.Aud, model.Role.ToString())
-		};
-
-		var date = DateTime.UtcNow;
-		var expiryDate = date.AddHours(tokenValidity) - date;
-		var tokenDescriptor = new SecurityTokenDescriptor
-		{
-			Subject = new ClaimsIdentity(claims),
-			Expires = date.AddHours(tokenValidity),
-			SigningCredentials = credentials,
-			Audience = Constants.JWTIssuerAndAudience,
-			Issuer = Constants.JWTIssuerAndAudience,
-			NotBefore = date,
-		};
-
-		var jwtTokenHandler = new JwtSecurityTokenHandler();
-		var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-
-		return new TokenResponseDTO
-		{
-			AccessToken = jwtTokenHandler.WriteToken(token),
-			TokenExp = Convert.ToInt32(expiryDate.TotalSeconds),
-		};
-	}
-
 	public async Task<TokenResponseDTO> GetBearerTokenAsync(Profile model, int tokenValidity)
 	{
 		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Constants.JWTKey)) { KeyId = Constants.JWTKeyId };
