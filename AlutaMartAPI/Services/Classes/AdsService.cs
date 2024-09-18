@@ -241,7 +241,7 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
         var adsQuery = _unitOfWork.Context.Ads
             .AsNoTracking()
             .OrderByDescending(x => x.Created)
-            .Where(x => x.Status == AdsStatus.Active)
+            .Where(x => x.Status == AdsStatus.Active && x.QuantityInStock > 0)
             .Select(x => new GetAdsDTO
             {
                 Id = x.Id,
