@@ -8,9 +8,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 {
     public virtual DbSet<Profile> Profiles { get; set; }
 	public virtual DbSet<Ads> Ads { get; set; }
+	public virtual DbSet<Category> Categories { get; set; }
 	public virtual DbSet<AdsCategory> AdsCategories { get; set; }
 	public virtual DbSet<AdsImage> AdsImages { get; set; }
 	public virtual DbSet<AdsVideo> AdsVideos { get; set; }
+	public virtual DbSet<Report> Reports { get; set; }
 
 
 	public virtual DbSet<AdsComment> AdsComments { get; set; }
@@ -24,6 +26,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 	public virtual DbSet<Cart> Carts { get; set; }
 	public virtual DbSet<PlanTier> PlanTiers { get; set; }
 	public virtual DbSet<PurchasedAd> PurchasedAds { get; set; }
+	public virtual DbSet<Message> Messages { get; set; }
+	public virtual DbSet<Conversation> Conversations { get; set; }
 
 
 	public virtual DbSet<IdentityCard> IdentityCards { get; set; }
@@ -60,12 +64,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 		modelBuilder.Entity<Profile>().HasIndex(b => b.Token);
 
 		modelBuilder.Entity<Ads>().HasQueryFilter(p => !p.IsDeleted);
-		modelBuilder.Entity<AdsCategory>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<Category>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsImage>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsVideo>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsReceipt>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<AdsComment>().HasQueryFilter(p => !p.IsDeleted);
 		modelBuilder.Entity<PurchasedAd>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<AdsCategory>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<AdsEngagement>().HasQueryFilter(p => !p.IsDeleted);
+		modelBuilder.Entity<Report>().HasQueryFilter(p => !p.IsDeleted);
 
 
 		modelBuilder.Entity<Currency>().HasQueryFilter(p => !p.IsDeleted);

@@ -3,15 +3,15 @@ using AlutaMartAPI.DTOs;
 using AlutaMartAPI.Utilities;
 using Microsoft.EntityFrameworkCore;
 namespace AlutaMartAPI.Services;
-public class AdsCategoryService(IUnitOfWork unitOfWork, IResponseService responseService, IMemoryCacheService _memoryCache) 
-: BaseDBService(unitOfWork, responseService), IAdsCategoryService
+public class CategoryService(IUnitOfWork unitOfWork, IResponseService responseService, IMemoryCacheService _memoryCache) 
+: BaseDBService(unitOfWork, responseService), ICategoryService
 {
     public async Task<ServiceResponse<List<GetAdsCategoryDTO>>> GetAsync()
     {
         var cacheResponse = _memoryCache.GetFromLocalCache<List<GetAdsCategoryDTO>>(Constants.AdsCategoryCacheKey);
         if(!cacheResponse.Status)
         {
-            cacheResponse.Data = await _unitOfWork.Context.AdsCategories
+            cacheResponse.Data = await _unitOfWork.Context.Categories
                 .AsNoTracking()
                 .Select(x => new GetAdsCategoryDTO
                 { 

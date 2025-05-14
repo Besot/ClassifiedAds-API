@@ -159,3 +159,38 @@ public enum PaymentProcessor
 	[Display(Name = "Paystack")]
 	Paystack
 }
+
+public enum ReviewStatus
+{
+
+	[Display(Name = "Pending")]
+	Pending  = 1,
+
+	[Display(Name = "Rejected")]
+	Rejected,
+
+	[Display(Name = "Approved")]
+	Approved
+}
+public enum ReportType
+    {
+        Inappropriate,
+        Fraudulent,
+        Misleading,
+        Offensive,
+        Other
+    }
+
+    public enum ReportStatus
+    {
+        Pending,
+        UnderReview,
+        Resolved,
+        Dismissed
+    }
+	    public enum MessageStatus
+    {
+        Sent,
+        Delivered,
+        Read
+    }

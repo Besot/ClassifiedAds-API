@@ -22,9 +22,9 @@ namespace AlutaMartAPI.Database
             return GetRecords<Institution>("institutions.csv");
         }
 
-        public IEnumerable<AdsCategory> GetAdsCategories()
+        public IEnumerable<Category> GetAdsCategories()
         {
-            return GetRecords<AdsCategory>("categories_brands.csv");
+            return GetRecords<Category>("categories_brands.csv");
         }
 
         public IEnumerable<PlanTier> GetPlanTiers()

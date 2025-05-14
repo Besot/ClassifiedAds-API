@@ -35,4 +35,6 @@ namespace AlutaMartAPI.DTOs;
 
         [Required(ErrorMessage ="Ad quantity is required")]
         public AdsCondition AdsCondition { get; set; }
+        public List<Guid> CategoryIds { get; set; }
+
     }

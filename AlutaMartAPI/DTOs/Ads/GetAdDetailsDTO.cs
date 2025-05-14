@@ -24,5 +24,7 @@ namespace AlutaMartAPI.DTOs;
         public Guid AdCategoryId { get; set; }
         public Guid CurrencyId { get; set; }
         public List<GetVendorReviewDTO> Reviews { get; set; }
-
+        public List<CategoryDTO> Categories { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }

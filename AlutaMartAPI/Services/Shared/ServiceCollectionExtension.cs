@@ -1,4 +1,5 @@
 using AlutaMartAPI.Database;
+using AlutaMartAPI.Services.Classes;
 using AlutaMartAPI.Utilities;
 using AspNetCoreRateLimit;
 
@@ -19,7 +20,7 @@ namespace AlutaMartAPI.Services
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IVendorService, VendorService>();
-            services.AddScoped<IAdsCategoryService, AdsCategoryService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICurrencyService, CurrencyService>();
             services.AddScoped<IInstitutionService, InstitutionService>();
 
@@ -30,6 +31,12 @@ namespace AlutaMartAPI.Services
             services.AddTransient<IPaystackService, PaystackService>();
             services.AddScoped<IWalletService, WalletServices>();
             services.AddSingleton<ExpiredAdCheckService>();
+            
+            // New services
+            services.AddScoped<IWishlistService, WishlistService>();
+            services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IRatingService, RatingService>();
 
             services.AddHostedService<ExpiredAdCheckService>();
 
