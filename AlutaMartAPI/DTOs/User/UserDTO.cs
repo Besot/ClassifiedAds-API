@@ -18,5 +18,4 @@ public class  UserDTO
 	public Guid? VendorId { get; set; }
 	public Guid? VendorPlanTierId { get; set; } // Add VendorPlanTier info
 	public string VendorPlanTier { get; set; } // Add VendorPlanTier info
-	public Guid? BuyerId { get; set; }
 }

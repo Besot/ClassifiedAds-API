@@ -28,9 +28,6 @@ namespace ALUTAMARTAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AdsCategoryId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("AdsCondition")
                         .HasColumnType("integer");
 
@@ -96,8 +93,6 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AdsCategoryId");
-
                     b.HasIndex("CurrencyId");
 
                     b.HasIndex("VendorId");
@@ -111,49 +106,11 @@ namespace ALUTAMARTAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Brand")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Code")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset?>("Deleted")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AdsCategories");
-                });
-
-            modelBuilder.Entity("AlutaMartAPI.Models.AdsComment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("AdsId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("BuyerId")
+                    b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -174,9 +131,9 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.HasIndex("AdsId");
 
-                    b.HasIndex("BuyerId");
+                    b.HasIndex("CategoryId");
 
-                    b.ToTable("AdsComments");
+                    b.ToTable("AdsCategories");
                 });
 
             modelBuilder.Entity("AlutaMartAPI.Models.AdsEngagement", b =>
@@ -334,25 +291,37 @@ namespace ALUTAMARTAPI.Migrations
                     b.ToTable("AdsVideos");
                 });
 
-            modelBuilder.Entity("AlutaMartAPI.Models.Buyer", b =>
+            modelBuilder.Entity("AlutaMartAPI.Models.BankAccount", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("AdPurchasedCount")
-                        .HasColumnType("integer");
+                    b.Property<string>("BankAccountName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankAccountNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankName")
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset?>("Deleted")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("InstitutionId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDefault")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
@@ -366,52 +335,9 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InstitutionId");
+                    b.HasIndex("CurrencyId");
 
-                    b.HasIndex("ProfileId");
-
-                    b.ToTable("Buyers");
-                });
-
-            modelBuilder.Entity("AlutaMartAPI.Models.BuyerInterestedInstitution", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("BuyerId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset?>("Deleted")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("InstitutionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ProfileId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BuyerId");
-
-                    b.HasIndex("InstitutionId");
-
-                    b.HasIndex("ProfileId");
-
-                    b.ToTable("BuyerInterestedInstitutions");
+                    b.ToTable("BankAccounts");
                 });
 
             modelBuilder.Entity("AlutaMartAPI.Models.Cart", b =>
@@ -421,9 +347,6 @@ namespace ALUTAMARTAPI.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("AdsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("BuyerId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("Created")
@@ -457,13 +380,90 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.HasIndex("AdsId");
 
-                    b.HasIndex("BuyerId");
-
                     b.HasIndex("ProfileId");
 
                     b.HasIndex("VendorId");
 
                     b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Brand")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("Deleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AdsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("Deleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastMessageTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdsId");
+
+                    b.HasIndex("ProfileId");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("Conversations");
                 });
 
             modelBuilder.Entity("AlutaMartAPI.Models.Currency", b =>
@@ -565,6 +565,51 @@ namespace ALUTAMARTAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Institutions");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.Message", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("Deleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsFromBuyer")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("SenderProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("SenderProfileId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("AlutaMartAPI.Models.PaymentInflow", b =>
@@ -792,6 +837,9 @@ namespace ALUTAMARTAPI.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<int>("AdPurchasedCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -811,6 +859,9 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("InstitutionId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -862,6 +913,9 @@ namespace ALUTAMARTAPI.Migrations
                     b.Property<int?>("TokenType")
                         .HasColumnType("integer");
 
+                    b.Property<string>("TransactionPIN")
+                        .HasColumnType("text");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
@@ -870,6 +924,8 @@ namespace ALUTAMARTAPI.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InstitutionId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -893,9 +949,6 @@ namespace ALUTAMARTAPI.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("AdsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("BuyerId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("Created")
@@ -926,8 +979,6 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.HasIndex("AdsId");
 
-                    b.HasIndex("BuyerId");
-
                     b.HasIndex("PaymentInflowId");
 
                     b.HasIndex("ProfileId");
@@ -937,6 +988,59 @@ namespace ALUTAMARTAPI.Migrations
                     b.ToTable("PurchasedAds");
                 });
 
+            modelBuilder.Entity("AlutaMartAPI.Models.Report", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AdminNote")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("AdsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("Deleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ReporterProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("VendorId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdsId");
+
+                    b.HasIndex("ReporterProfileId");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("Reports");
+                });
+
             modelBuilder.Entity("AlutaMartAPI.Models.Review", b =>
                 {
                     b.Property<Guid>("Id")
@@ -944,9 +1048,6 @@ namespace ALUTAMARTAPI.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("AdsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("BuyerId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Content")
@@ -967,6 +1068,12 @@ namespace ALUTAMARTAPI.Migrations
                     b.Property<DateTimeOffset?>("Modified")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("VendorId")
                         .HasColumnType("uuid");
 
@@ -974,11 +1081,46 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.HasIndex("AdsId");
 
-                    b.HasIndex("BuyerId");
+                    b.HasIndex("ProfileId");
 
                     b.HasIndex("VendorId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.SecurityQuestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("Deleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SecurityQuestionAnswer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecurityQuestionKey")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SecurityQuestions");
                 });
 
             modelBuilder.Entity("AlutaMartAPI.Models.Transaction", b =>
@@ -1052,6 +1194,42 @@ namespace ALUTAMARTAPI.Migrations
                     b.HasIndex("ProfileId");
 
                     b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.UserInterestedInstitution", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("Deleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("InstitutionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstitutionId");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("UserInterestedInstitutions");
                 });
 
             modelBuilder.Entity("AlutaMartAPI.Models.Vendor", b =>
@@ -1167,41 +1345,6 @@ namespace ALUTAMARTAPI.Migrations
                     b.ToTable("VendorPlan");
                 });
 
-            modelBuilder.Entity("AlutaMartAPI.Models.WaitingUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset?>("Deleted")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("Modified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("WaitingUsers");
-                });
-
             modelBuilder.Entity("AlutaMartAPI.Models.Wallet", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1239,6 +1382,73 @@ namespace ALUTAMARTAPI.Migrations
                     b.HasIndex("ProfileId");
 
                     b.ToTable("Wallets");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.Wishlist", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("Deleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("Wishlists");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.WishlistItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AdsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("Deleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("WishlistId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdsId");
+
+                    b.HasIndex("WishlistId");
+
+                    b.ToTable("WishlistItems");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -1373,12 +1583,6 @@ namespace ALUTAMARTAPI.Migrations
 
             modelBuilder.Entity("AlutaMartAPI.Models.Ads", b =>
                 {
-                    b.HasOne("AlutaMartAPI.Models.AdsCategory", "AdsCategory")
-                        .WithMany()
-                        .HasForeignKey("AdsCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("AlutaMartAPI.Models.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
@@ -1391,30 +1595,28 @@ namespace ALUTAMARTAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AdsCategory");
-
                     b.Navigation("Currency");
 
                     b.Navigation("Vendor");
                 });
 
-            modelBuilder.Entity("AlutaMartAPI.Models.AdsComment", b =>
+            modelBuilder.Entity("AlutaMartAPI.Models.AdsCategory", b =>
                 {
                     b.HasOne("AlutaMartAPI.Models.Ads", "Ads")
-                        .WithMany()
+                        .WithMany("AdsCategories")
                         .HasForeignKey("AdsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AlutaMartAPI.Models.Buyer", "Buyer")
+                    b.HasOne("AlutaMartAPI.Models.Category", "Category")
                         .WithMany()
-                        .HasForeignKey("BuyerId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Ads");
 
-                    b.Navigation("Buyer");
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("AlutaMartAPI.Models.AdsEngagement", b =>
@@ -1437,7 +1639,7 @@ namespace ALUTAMARTAPI.Migrations
             modelBuilder.Entity("AlutaMartAPI.Models.AdsImage", b =>
                 {
                     b.HasOne("AlutaMartAPI.Models.Ads", "Ads")
-                        .WithMany()
+                        .WithMany("AdsImages")
                         .HasForeignKey("AdsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1473,48 +1675,15 @@ namespace ALUTAMARTAPI.Migrations
                     b.Navigation("Vendor");
                 });
 
-            modelBuilder.Entity("AlutaMartAPI.Models.Buyer", b =>
+            modelBuilder.Entity("AlutaMartAPI.Models.BankAccount", b =>
                 {
-                    b.HasOne("AlutaMartAPI.Models.Institution", "VendorInstitution")
+                    b.HasOne("AlutaMartAPI.Models.Currency", "Currency")
                         .WithMany()
-                        .HasForeignKey("InstitutionId");
-
-                    b.HasOne("AlutaMartAPI.Models.Profile", "Profile")
-                        .WithMany()
-                        .HasForeignKey("ProfileId")
+                        .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Profile");
-
-                    b.Navigation("VendorInstitution");
-                });
-
-            modelBuilder.Entity("AlutaMartAPI.Models.BuyerInterestedInstitution", b =>
-                {
-                    b.HasOne("AlutaMartAPI.Models.Buyer", "Buyer")
-                        .WithMany()
-                        .HasForeignKey("BuyerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AlutaMartAPI.Models.Institution", "Institution")
-                        .WithMany()
-                        .HasForeignKey("InstitutionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AlutaMartAPI.Models.Profile", "Profile")
-                        .WithMany()
-                        .HasForeignKey("ProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Buyer");
-
-                    b.Navigation("Institution");
-
-                    b.Navigation("Profile");
+                    b.Navigation("Currency");
                 });
 
             modelBuilder.Entity("AlutaMartAPI.Models.Cart", b =>
@@ -1524,10 +1693,6 @@ namespace ALUTAMARTAPI.Migrations
                         .HasForeignKey("AdsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AlutaMartAPI.Models.Buyer", "Buyer")
-                        .WithMany()
-                        .HasForeignKey("BuyerId");
 
                     b.HasOne("AlutaMartAPI.Models.Profile", "Profile")
                         .WithMany()
@@ -1543,7 +1708,30 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.Navigation("Ads");
 
-                    b.Navigation("Buyer");
+                    b.Navigation("Profile");
+
+                    b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.Conversation", b =>
+                {
+                    b.HasOne("AlutaMartAPI.Models.Ads", "Ads")
+                        .WithMany()
+                        .HasForeignKey("AdsId");
+
+                    b.HasOne("AlutaMartAPI.Models.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlutaMartAPI.Models.Vendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ads");
 
                     b.Navigation("Profile");
 
@@ -1559,6 +1747,25 @@ namespace ALUTAMARTAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.Message", b =>
+                {
+                    b.HasOne("AlutaMartAPI.Models.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlutaMartAPI.Models.Profile", "SenderProfile")
+                        .WithMany()
+                        .HasForeignKey("SenderProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("SenderProfile");
                 });
 
             modelBuilder.Entity("AlutaMartAPI.Models.PaymentInflow", b =>
@@ -1626,15 +1833,20 @@ namespace ALUTAMARTAPI.Migrations
                     b.Navigation("PaymentOutflow");
                 });
 
+            modelBuilder.Entity("AlutaMartAPI.Models.Profile", b =>
+                {
+                    b.HasOne("AlutaMartAPI.Models.Institution", "Institution")
+                        .WithMany()
+                        .HasForeignKey("InstitutionId");
+
+                    b.Navigation("Institution");
+                });
+
             modelBuilder.Entity("AlutaMartAPI.Models.PurchasedAd", b =>
                 {
                     b.HasOne("AlutaMartAPI.Models.Ads", "Ads")
                         .WithMany()
                         .HasForeignKey("AdsId");
-
-                    b.HasOne("AlutaMartAPI.Models.Buyer", "Buyer")
-                        .WithMany()
-                        .HasForeignKey("BuyerId");
 
                     b.HasOne("AlutaMartAPI.Models.PaymentInflow", "PaymentInflow")
                         .WithMany()
@@ -1654,8 +1866,6 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.Navigation("Ads");
 
-                    b.Navigation("Buyer");
-
                     b.Navigation("PaymentInflow");
 
                     b.Navigation("Profile");
@@ -1663,15 +1873,15 @@ namespace ALUTAMARTAPI.Migrations
                     b.Navigation("Vendor");
                 });
 
-            modelBuilder.Entity("AlutaMartAPI.Models.Review", b =>
+            modelBuilder.Entity("AlutaMartAPI.Models.Report", b =>
                 {
                     b.HasOne("AlutaMartAPI.Models.Ads", "Ads")
-                        .WithMany()
+                        .WithMany("AdReports")
                         .HasForeignKey("AdsId");
 
-                    b.HasOne("AlutaMartAPI.Models.Buyer", "Buyer")
+                    b.HasOne("AlutaMartAPI.Models.Profile", "ReporterProfile")
                         .WithMany()
-                        .HasForeignKey("BuyerId")
+                        .HasForeignKey("ReporterProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1681,7 +1891,30 @@ namespace ALUTAMARTAPI.Migrations
 
                     b.Navigation("Ads");
 
-                    b.Navigation("Buyer");
+                    b.Navigation("ReporterProfile");
+
+                    b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.Review", b =>
+                {
+                    b.HasOne("AlutaMartAPI.Models.Ads", "Ads")
+                        .WithMany("AdsReviews")
+                        .HasForeignKey("AdsId");
+
+                    b.HasOne("AlutaMartAPI.Models.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlutaMartAPI.Models.Vendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorId");
+
+                    b.Navigation("Ads");
+
+                    b.Navigation("Profile");
 
                     b.Navigation("Vendor");
                 });
@@ -1713,6 +1946,25 @@ namespace ALUTAMARTAPI.Migrations
                     b.Navigation("PaymentInflow");
 
                     b.Navigation("PaymentOutflow");
+
+                    b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.UserInterestedInstitution", b =>
+                {
+                    b.HasOne("AlutaMartAPI.Models.Institution", "Institution")
+                        .WithMany()
+                        .HasForeignKey("InstitutionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlutaMartAPI.Models.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Institution");
 
                     b.Navigation("Profile");
                 });
@@ -1786,6 +2038,36 @@ namespace ALUTAMARTAPI.Migrations
                     b.Navigation("Profile");
                 });
 
+            modelBuilder.Entity("AlutaMartAPI.Models.Wishlist", b =>
+                {
+                    b.HasOne("AlutaMartAPI.Models.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.WishlistItem", b =>
+                {
+                    b.HasOne("AlutaMartAPI.Models.Ads", "Ads")
+                        .WithMany()
+                        .HasForeignKey("AdsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlutaMartAPI.Models.Wishlist", "Wishlist")
+                        .WithMany("WishlistItems")
+                        .HasForeignKey("WishlistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ads");
+
+                    b.Navigation("Wishlist");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -1837,9 +2119,30 @@ namespace ALUTAMARTAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("AlutaMartAPI.Models.Ads", b =>
+                {
+                    b.Navigation("AdReports");
+
+                    b.Navigation("AdsCategories");
+
+                    b.Navigation("AdsImages");
+
+                    b.Navigation("AdsReviews");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.Conversation", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("AlutaMartAPI.Models.Vendor", b =>
                 {
                     b.Navigation("VendorPlanTier");
+                });
+
+            modelBuilder.Entity("AlutaMartAPI.Models.Wishlist", b =>
+                {
+                    b.Navigation("WishlistItems");
                 });
 #pragma warning restore 612, 618
         }

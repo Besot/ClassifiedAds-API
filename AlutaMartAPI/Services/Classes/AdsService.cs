@@ -24,9 +24,6 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
         if (model.CurrencyId == Guid.Empty || !model.CurrencyId.HasValue)
             return _responseService.ErrorResponse<string>("Currency type is required");
 
-        if (model.AdsCategoryId == Guid.Empty || !model.AdsCategoryId.HasValue)
-            return _responseService.ErrorResponse<string>("Ads category is required");
-
         // Validate image URL
         if (!model.AdsImageUrls.All(url => url.Contains("s3.eu-central-1.amazonaws.com")))
             return _responseService.ErrorResponse<string>("Invalid image URL");
@@ -44,10 +41,9 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
                 .Select(v => new{ v.Id, v.PlanTier})
             .FirstOrDefaultAsync();
 
-        var vendorAddress = vendor.Name;
-
+        // var vendorAddress = vendor.Name;
         var isCurrencyValid = await _unitOfWork.Context.Currencies.AnyAsync(c => c.Id == model.CurrencyId.Value);
-        var isAdsCategoryValid = await _unitOfWork.Context.AdsCategories.AnyAsync(ac => ac.Id == model.AdsCategoryId.Value);
+        // var isAdsCategoryValid = await _unitOfWork.Context.AdsCategories.AnyAsync(ac => ac.Id == model.AdsCategoryId.Value);
 
         if (vendor == null || vendorPlan == null)
             return _responseService.ErrorResponse<string>("Vendor or plan tier not found");
@@ -60,15 +56,13 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
             return _responseService.ErrorResponse<string>("Plan tier not found");
 
         // Ensure vendor name is not null or empty before geocoding
-        if (string.IsNullOrEmpty(vendorAddress))
+        if (string.IsNullOrEmpty(vendor.Name))
             return _responseService.ErrorResponse<string>("Vendor address is invalid");
 
 
         if (!isCurrencyValid)
             return _responseService.ErrorResponse<string>("Currency selected is invalid");
 
-        if (!isAdsCategoryValid)
-            return _responseService.ErrorResponse<string>("Ads category selected is invalid");
 
         // Retrieve ad counts and validate against plan tier limits
         var adsCount = await _unitOfWork.Context.Ads.CountAsync(a => a.VendorId == user.VendorId.Value && !a.IsDeleted);
@@ -86,7 +80,7 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
 
 
          // Use the GeocodingService to get the coordinates of the address
-        var (Latitude, Longitude) = await _geocodingService.GetCoordinates(vendorAddress);
+        var (Latitude, Longitude) = await _geocodingService.GetCoordinates(vendor.Name);
         
         var ad = new Ads
         {
@@ -242,9 +236,9 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
             .Select(x => new GetVendorReviewDTO
             {
                 ReviewId = x.Id,
-                ReviewerName = $"{x.Buyer.Profile.FirstName} {x.Buyer.Profile.LastName}",
+                ReviewerName = $"{x.Profile.FirstName} {x.Profile.LastName}",
                 Review = x.Content,
-                ReviewerPicture = x.Buyer.Profile.ProfilePictureUrl,
+                ReviewerPicture = x.Profile.ProfilePictureUrl,
                 ReviewDate = x.Modified,
                 Edited = x.Modified != x.Created
             })
@@ -368,9 +362,6 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
 
         var adExists = await _unitOfWork.Context.Ads.AnyAsync(x => x.Id == adId);
         if(!adExists) return _responseService.ErrorResponse<string>("Invalid Ad");
-
-        var isValidCategory = await _unitOfWork.Context.AdsCategories.AnyAsync(x => x.Id == model.AdsCategoryId.Value);
-        if(!isValidCategory) return _responseService.ErrorResponse<string>("Select a valid category");
 
         var isValidCurrency = await _unitOfWork.Context.Currencies.AnyAsync(x => x.Id == model.CurrencyId.Value);
         if(!isValidCurrency) return _responseService.ErrorResponse<string>("Select a valid currency");
@@ -505,26 +496,26 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
 
         if(quantity > ad.QuantityInStock) return _responseService.ErrorResponse<string>("Quantity selected is more than the available stock");
         
-        var isOnboardedAsBuyer = await _unitOfWork.Context.Buyers
-            .AsNoTracking()
-            .Where(x => x.ProfileId == user.Id)
-            .Select(x => new{ x.Id, x.AdPurchasedCount }).FirstOrDefaultAsync();
+        // var isOnboardedAsBuyer = await _unitOfWork.Context.Buyers
+        //     .AsNoTracking()
+        //     .Where(x => x.ProfileId == user.Id)
+        //     .Select(x => new{ x.Id, x.AdPurchasedCount }).FirstOrDefaultAsync();
 
-        if(isOnboardedAsBuyer == null)
+        // if(isOnboardedAsBuyer == null)
+        // {
+        //     var buyer = new Buyer
+        //     {
+        //         ProfileId = user.Id,
+        //         InstitutionId = null,
+        //         AdPurchasedCount = quantity
+        //     };
+        //     await _unitOfWork.Context.AddAsync(buyer);
+        // }
+        // else
         {
-            var buyer = new Buyer
-            {
-                ProfileId = user.Id,
-                InstitutionId = null,
-                AdPurchasedCount = quantity
-            };
-            await _unitOfWork.Context.AddAsync(buyer);
-        }
-        else
-        {
-            await _unitOfWork.Context.Database.ExecuteSqlRawAsync(BuyerSQL.UpdateAdPurchasedCount, 
+            await _unitOfWork.Context.Database.ExecuteSqlRawAsync(ProfileSQL.UpdateAdPurchasedCount, 
             new NpgsqlParameter("@quantity", quantity), 
-            new NpgsqlParameter("@buyerId", isOnboardedAsBuyer.Id));
+            new NpgsqlParameter("@profileId", user.Id));
         }
         
         if(ad.VendorId == Guid.Empty || ad is null) return _responseService.ErrorResponse<string>("Invalid ad Id");
@@ -596,15 +587,15 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
             VendorId = ad.VendorId
         };
 
-        var buyerId = await _unitOfWork.Context.Buyers
-            .AsNoTracking()
-            .Where(x => x.ProfileId == user.Id)
-            .Select(x => x.Id)
-            .FirstOrDefaultAsync();
+        // var buyerId = await _unitOfWork.Context.Buyers
+        //     .AsNoTracking()
+        //     .Where(x => x.ProfileId == user.Id)
+        //     .Select(x => x.Id)
+        //     .FirstOrDefaultAsync();
 
-        var adExistIncart = await _unitOfWork.Context.Carts.AsNoTracking().AnyAsync(x => x.AdsId == adId);
+        var adExistIncart = await _unitOfWork.Context.Carts.AsNoTracking().AnyAsync(x => x.AdsId == adId && x.ProfileId == user.Id);
             
-        if(buyerId != Guid.Empty) regBuyer.BuyerId = buyerId;
+        // if(buyerId != Guid.Empty) regBuyer.BuyerId = buyerId;
 
         await _unitOfWork.Context.AddAsync(regBuyer);
         await _unitOfWork.CommitAsync();
@@ -615,7 +606,12 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
         await _notificationService.AdPurchaseNoticeEmailAsync(ad.VendorEmail, ad.VendorFirstName, user.FullName, ad.Title);
         
         if(adExistIncart)
-        await _unitOfWork.Context.Database.ExecuteSqlRawAsync(CartSQL.RemoveAdFromCart, new NpgsqlParameter("@adId", adId));
+        await _unitOfWork.Context.Database.ExecuteSqlRawAsync(CartSQL.RemoveAdFromCart, new NpgsqlParameter("@adId", adId), new NpgsqlParameter("@profileId", user.Id));
+        // Update the ad's quantity in stock
+        var updatedQuantity = ad.QuantityInStock - quantity;
+        await _unitOfWork.Context.Database.ExecuteSqlRawAsync(AdSQL.UpdateAdQuantity, 
+            new NpgsqlParameter("@adId", adId), 
+            new NpgsqlParameter("@quantityInStock", updatedQuantity));
 
         return _responseService.SuccessResponse(adId.ToString(), "Ad purchased successfully...");
     }

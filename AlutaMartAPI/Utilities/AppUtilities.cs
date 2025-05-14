@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -191,4 +193,15 @@ public static class AppUtilities
             _ => "Unknown"
         };
     }
+
+    public static string HashString(this string input)
+	{
+		if (string.IsNullOrEmpty(input))
+			return string.Empty;
+
+		byte[] bytes = Encoding.UTF8.GetBytes(input);
+		byte[] hash = SHA256.HashData(bytes);
+		return Convert.ToHexString(hash).ToLowerInvariant();
+	}
+
 }

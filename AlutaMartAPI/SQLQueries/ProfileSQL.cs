@@ -13,5 +13,6 @@ namespace AlutaMartAPI.SQLQueries;
 	public static string SetProfileInactive => @"UPDATE ""Profiles"" SET ""IsActive"" = false WHERE ""Id"" = @id";
 
 	public static string SetProfileActive => @"UPDATE ""Profiles"" SET ""IsActive"" = true WHERE ""Id"" = @id";
-
+	public static string UpdateAdPurchasedCount => @"UPDATE ""Profiles"" SET ""AdPurchasedCount"" = ""AdPurchasedCount"" + @quantity, ""Modified"" = now() WHERE ""Id"" = @profileId";
+        
 }

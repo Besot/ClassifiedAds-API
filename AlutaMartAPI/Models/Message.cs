@@ -8,8 +8,8 @@ namespace AlutaMartAPI.Models
 
     public class Conversation : BaseEntity
     {
-        public Guid BuyerId { get; set; }
-        public virtual Buyer Buyer { get; set; }
+        public Guid ProfileId { get; set; }
+        public virtual Profile Profile { get; set; }
         
         public Guid VendorId { get; set; } 
         public virtual Vendor Vendor { get; set; }
@@ -27,7 +27,8 @@ namespace AlutaMartAPI.Models
         public Guid ConversationId { get; set; }
         public virtual Conversation Conversation { get; set; }
         
-        public Guid SenderId { get; set; }
+        public Guid SenderProfileId { get; set; }
+        public virtual Profile SenderProfile { get; set; }
         public bool IsFromBuyer { get; set; }
         
         public MessageStatus Status { get; set; } = MessageStatus.Sent;

@@ -23,29 +23,29 @@ public class WalletServices(IUnitOfWork _unitOfWork, IResponseService _responseS
 
         if (walletData == null) return _responseService.ErrorResponse<GetWalletDTO>("Wallet not found.");
 
-        var transactions = await _unitOfWork.Context.Transactions
-            .AsNoTracking() 
-            .Where(x => x.ProfileId == user.Id) 
-            .Select(x => new GetWalletTransactionDTO
-            {
-                // If the transaction is a payment inflow, get the course title, otherwise label it as "Withdrawal"
-                Item = x.PaymentInflow != null ? x.PaymentInflow.Ads.Title : "Withdrawal", 
+        // var transactions = await _unitOfWork.Context.Transactions
+        //     .AsNoTracking() 
+        //     .Where(x => x.ProfileId == user.Id) 
+        //     .Select(x => new GetWalletTransactionDTO
+        //     {
+        //         // If the transaction is a payment inflow, get the course title, otherwise label it as "Withdrawal"
+        //         Item = x.PaymentInflow != null ? x.PaymentInflow.Ads.Title : "Withdrawal", 
 
-                InitiatorName = x.PaymentInflow != null 
-                    ? $"{ x.PaymentInflow.Profile.FirstName }  { x.PaymentInflow.Profile.LastName }" 
-                    : $"{ x.PaymentOutflow.Profile.FirstName } { x.PaymentOutflow.Profile.LastName }",
+        //         InitiatorName = x.PaymentInflow != null 
+        //             ? $"{ x.PaymentInflow.Profile.FirstName }  { x.PaymentInflow.Profile.LastName }" 
+        //             : $"{ x.PaymentOutflow.Profile.FirstName } { x.PaymentOutflow.Profile.LastName }",
 
-                Amount = x.Amount,
-                PaymentType = x.PaymentType,
-                DatePaid = x.PaymentInflow != null ? x.PaymentInflow.DatePaid : x.PaymentOutflow.Created
-            })
-            .ToListAsync();
+        //         Amount = x.Amount,
+        //         PaymentType = x.PaymentType,
+        //         DatePaid = x.PaymentInflow != null ? x.PaymentInflow.DatePaid : x.PaymentOutflow.Created
+        //     })
+        //     .ToListAsync();
 
         var wallet = new GetWalletDTO
             {
                 Balance = walletData.Amount,
                 TotalSales = walletData.TotalSales,
-                TransactionHistory = transactions
+                // TransactionHistory = transactions
             };
 
         return _responseService.SuccessResponse(wallet, "Wallet");

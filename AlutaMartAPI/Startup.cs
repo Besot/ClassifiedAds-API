@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.OpenApi.Models;
 using AlutaMartAPI.Database;
+using AlutaMartAPI.Hubs;
 using AlutaMartAPI.Services;
 using AlutaMartAPI.Utilities;
 
@@ -23,8 +24,18 @@ public class Startup
 		services.AddIdentityServices();
 		services.AddAlutaMartServices();
 		services.AddHttpClient();
-		services.AddCors(o => o.AddPolicy("CoresPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+		services.AddCors(o => o.AddPolicy("CoresPolicy", builder => 
+			builder.AllowAnyMethod()
+			.AllowAnyHeader()
+			.SetIsOriginAllowed(_ => true)
+			.AllowCredentials()));
 		services.AddControllers();
+		services.AddSignalR(options =>
+		{
+			// Configure SignalR options
+			options.EnableDetailedErrors = true;
+			options.KeepAliveInterval = TimeSpan.FromMinutes(1);
+		});
 		services.ResponseCompression();
 		services.AddAuthenticationServices();
 
@@ -102,7 +113,12 @@ public class Startup
 			await next(context);
 		});
 
-		app.UseEndpoints(endpoints => endpoints.MapControllers());
+		app.UseEndpoints(endpoints => 
+		{
+			endpoints.MapControllers();
+			// Add SignalR hub endpoint
+			endpoints.MapHub<ChatHub>("/chatHub");
+		});
 		app.InitializeDatabase();
 		// app.SeedDataToDatabase();
 	}

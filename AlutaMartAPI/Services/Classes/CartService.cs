@@ -32,7 +32,6 @@ public class CartService(IUnitOfWork _unitOfWork, IResponseService _responseServ
         {
             AdsId = model.AdsId.Value,
             VendorId = ads.VendorId,
-            BuyerId = user.BuyerId.Value,
             ProfileId = user.Id,
             QuantityAdded = model.Quantity,
             PriceAtTimeOfAdd = ads.DiscountPrice ?? ads.Price,
@@ -105,7 +104,7 @@ public class CartService(IUnitOfWork _unitOfWork, IResponseService _responseServ
     public async Task<ServiceResponse<string>> DeleteCartAsync(Guid cartId, UserDTO user)
     {
         var cartItem = await _unitOfWork.Context.Carts
-            .FirstOrDefaultAsync(c => c.Id == cartId && c.BuyerId == user.BuyerId.Value && c.IsActive);
+            .FirstOrDefaultAsync(c => c.Id == cartId && c.ProfileId == user.Id && c.IsActive);
 
         if (cartItem == null)return _responseService.ErrorResponse<string>("Cart item not found");
 

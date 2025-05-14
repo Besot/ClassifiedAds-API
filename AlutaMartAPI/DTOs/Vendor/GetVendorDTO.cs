@@ -4,6 +4,7 @@ using AlutaMartAPI.Utilities;
 namespace AlutaMartAPI.DTOs;
     public class GetVendorDTO
     {
+        public Guid Id { get; set; }
         public string BrandName { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }

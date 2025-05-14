@@ -34,6 +34,8 @@ public class TransactionService(
                 BuyerFirstName = x.Profile.FirstName,
                 BuyerLastName = x.Profile.LastName,
                 x.AdId,
+                x.Ads.QuantityInStock,
+                x.Quantity,
                 AdTitle = x.Ads.Title,
                 x.VendorId,
                 VendorEmail = x.Vendor.Profile.Email,
@@ -102,13 +104,13 @@ public class TransactionService(
             PaymentInflowId = paymentId
         };
 
-        var existingBuyer = await _unitOfWork.Context.Buyers
-            .AsNoTracking()
-            .Where(x => x.ProfileId == payment.BuyerProfileId)
-            .Select(x => x.Id)
-            .FirstOrDefaultAsync();
+        // var existingBuyer = await _unitOfWork.Context.Buyers
+        //     .AsNoTracking()
+        //     .Where(x => x.ProfileId == payment.BuyerProfileId)
+        //     .Select(x => x.Id)
+        //     .FirstOrDefaultAsync();
         
-        if(existingBuyer != Guid.Empty) regBuyer.BuyerId = existingBuyer;
+        // if(existingBuyer != Guid.Empty) regBuyer.BuyerId = existingBuyer;
 
         await _unitOfWork.Context.AddAsync(regBuyer);
 
@@ -137,6 +139,16 @@ public class TransactionService(
             };
             await _unitOfWork.Context.Database.ExecuteSqlRawAsync(TransactionSQL.UpdateWalletBalance, parameters);
         }
+
+        var adExistIncart = await _unitOfWork.Context.Carts.AsNoTracking().AnyAsync(x => x.AdsId == payment.AdId.Value && x.ProfileId == payment.BuyerProfileId);
+
+        if(adExistIncart)
+        await _unitOfWork.Context.Database.ExecuteSqlRawAsync(CartSQL.RemoveAdFromCart, new NpgsqlParameter("@adId", payment.AdId), new NpgsqlParameter("@profileId", payment.BuyerProfileId));
+
+        var updatedQuantity = payment.QuantityInStock - payment.Quantity;
+        await _unitOfWork.Context.Database.ExecuteSqlRawAsync(AdSQL.UpdateAdQuantity, 
+            new NpgsqlParameter("@adId", payment.AdId), 
+            new NpgsqlParameter("@quantityInStock", updatedQuantity));
         
         await _unitOfWork.CommitAsync();
 

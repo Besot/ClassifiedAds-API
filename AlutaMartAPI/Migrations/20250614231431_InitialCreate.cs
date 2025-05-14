@@ -12,8 +12,22 @@ namespace ALUTAMARTAPI.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // migrationBuilder.CreateTable(
+            //     name: "AspNetRoles",
+            //     columns: table => new
+            //     {
+            //         Id = table.Column<Guid>(type: "uuid", nullable: false),
+            //         Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+            //         NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+            //         ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
+            //     },
+            //     constraints: table =>
+            //     {
+            //         table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+            //     });
+
             migrationBuilder.CreateTable(
-                name: "AdsCategories",
+                name: "Categories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -28,22 +42,8 @@ namespace ALUTAMARTAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AdsCategories", x => x.Id);
+                    table.PrimaryKey("PK_Categories", x => x.Id);
                 });
-
-            // migrationBuilder.CreateTable(
-            //     name: "AspNetRoles",
-            //     columns: table => new
-            //     {
-            //         Id = table.Column<Guid>(type: "uuid", nullable: false),
-            //         Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-            //         NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-            //         ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
-            //     },
-            //     constraints: table =>
-            //     {
-            //         table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-            //     });
 
             migrationBuilder.CreateTable(
                 name: "Currencies",
@@ -105,6 +105,75 @@ namespace ALUTAMARTAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SecurityQuestions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SecurityQuestionKey = table.Column<string>(type: "text", nullable: true),
+                    SecurityQuestionAnswer = table.Column<string>(type: "text", nullable: true),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SecurityQuestions", x => x.Id);
+                });
+
+            // migrationBuilder.CreateTable(
+            //     name: "AspNetRoleClaims",
+            //     columns: table => new
+            //     {
+            //         Id = table.Column<int>(type: "integer", nullable: false)
+            //             .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+            //         RoleId = table.Column<Guid>(type: "uuid", nullable: false),
+            //         ClaimType = table.Column<string>(type: "text", nullable: true),
+            //         ClaimValue = table.Column<string>(type: "text", nullable: true)
+            //     },
+            //     constraints: table =>
+            //     {
+            //         table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+            //         table.ForeignKey(
+            //             name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+            //             column: x => x.RoleId,
+            //             principalTable: "AspNetRoles",
+            //             principalColumn: "Id",
+            //             onDelete: ReferentialAction.Cascade);
+            //     });
+
+            migrationBuilder.CreateTable(
+                name: "BankAccounts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CurrencyId = table.Column<Guid>(type: "uuid", nullable: false),
+                    BankAccountName = table.Column<string>(type: "text", nullable: true),
+                    BankAccountNumber = table.Column<string>(type: "text", nullable: true),
+                    BankName = table.Column<string>(type: "text", nullable: true),
+                    IsDefault = table.Column<bool>(type: "boolean", nullable: false),
+                    BankCode = table.Column<string>(type: "text", nullable: true),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BankAccounts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BankAccounts_Currencies_CurrencyId",
+                        column: x => x.CurrencyId,
+                        principalTable: "Currencies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Profiles",
                 columns: table => new
                 {
@@ -114,6 +183,9 @@ namespace ALUTAMARTAPI.Migrations
                     Faculty = table.Column<string>(type: "text", nullable: true),
                     AcademicLevel = table.Column<int>(type: "integer", nullable: true),
                     ProfilePictureUrl = table.Column<string>(type: "text", nullable: true),
+                    AdPurchasedCount = table.Column<int>(type: "integer", nullable: false),
+                    InstitutionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    TransactionPIN = table.Column<string>(type: "text", nullable: true),
                     Token = table.Column<int>(type: "integer", nullable: false),
                     TokenResetTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     TokenType = table.Column<int>(type: "integer", nullable: true),
@@ -139,47 +211,12 @@ namespace ALUTAMARTAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Profiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Profiles_Institutions_InstitutionId",
+                        column: x => x.InstitutionId,
+                        principalTable: "Institutions",
+                        principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateTable(
-                name: "WaitingUsers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WaitingUsers", x => x.Id);
-                });
-
-            // migrationBuilder.CreateTable(
-            //     name: "AspNetRoleClaims",
-            //     columns: table => new
-            //     {
-            //         Id = table.Column<int>(type: "integer", nullable: false)
-            //             .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-            //         RoleId = table.Column<Guid>(type: "uuid", nullable: false),
-            //         ClaimType = table.Column<string>(type: "text", nullable: true),
-            //         ClaimValue = table.Column<string>(type: "text", nullable: true)
-            //     },
-            //     constraints: table =>
-            //     {
-            //         table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
-            //         table.ForeignKey(
-            //             name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
-            //             column: x => x.RoleId,
-            //             principalTable: "AspNetRoles",
-            //             principalColumn: "Id",
-            //             onDelete: ReferentialAction.Cascade);
-            //     });
 
             // migrationBuilder.CreateTable(
             //     name: "AspNetUserClaims",
@@ -267,36 +304,6 @@ namespace ALUTAMARTAPI.Migrations
             //     });
 
             migrationBuilder.CreateTable(
-                name: "Buyers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
-                    InstitutionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    AdPurchasedCount = table.Column<int>(type: "integer", nullable: false),
-                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Buyers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Buyers_Institutions_InstitutionId",
-                        column: x => x.InstitutionId,
-                        principalTable: "Institutions",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Buyers_Profiles_ProfileId",
-                        column: x => x.ProfileId,
-                        principalTable: "Profiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "IdentityCards",
                 columns: table => new
                 {
@@ -354,6 +361,36 @@ namespace ALUTAMARTAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserInterestedInstitutions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    InstitutionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserInterestedInstitutions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserInterestedInstitutions_Institutions_InstitutionId",
+                        column: x => x.InstitutionId,
+                        principalTable: "Institutions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserInterestedInstitutions_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Wallets",
                 columns: table => new
                 {
@@ -385,13 +422,11 @@ namespace ALUTAMARTAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BuyerInterestedInstitutions",
+                name: "Wishlists",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
-                    BuyerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    InstitutionId = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -400,21 +435,9 @@ namespace ALUTAMARTAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BuyerInterestedInstitutions", x => x.Id);
+                    table.PrimaryKey("PK_Wishlists", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BuyerInterestedInstitutions_Buyers_BuyerId",
-                        column: x => x.BuyerId,
-                        principalTable: "Buyers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BuyerInterestedInstitutions_Institutions_InstitutionId",
-                        column: x => x.InstitutionId,
-                        principalTable: "Institutions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BuyerInterestedInstitutions_Profiles_ProfileId",
+                        name: "FK_Wishlists_Profiles_ProfileId",
                         column: x => x.ProfileId,
                         principalTable: "Profiles",
                         principalColumn: "Id",
@@ -484,7 +507,6 @@ namespace ALUTAMARTAPI.Migrations
                     AdsCondition = table.Column<int>(type: "integer", nullable: false),
                     NumberOfReviews = table.Column<long>(type: "bigint", nullable: false),
                     VendorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AdsCategoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     CurrencyId = table.Column<Guid>(type: "uuid", nullable: false),
                     Latitude = table.Column<double>(type: "double precision", nullable: false),
                     Longitude = table.Column<double>(type: "double precision", nullable: false),
@@ -497,12 +519,6 @@ namespace ALUTAMARTAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ads", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Ads_AdsCategories_AdsCategoryId",
-                        column: x => x.AdsCategoryId,
-                        principalTable: "AdsCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Ads_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
@@ -555,13 +571,12 @@ namespace ALUTAMARTAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AdsComments",
+                name: "AdsCategories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Comment = table.Column<string>(type: "text", nullable: true),
                     AdsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    BuyerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -570,17 +585,17 @@ namespace ALUTAMARTAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AdsComments", x => x.Id);
+                    table.PrimaryKey("PK_AdsCategories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AdsComments_Ads_AdsId",
+                        name: "FK_AdsCategories_Ads_AdsId",
                         column: x => x.AdsId,
                         principalTable: "Ads",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AdsComments_Buyers_BuyerId",
-                        column: x => x.BuyerId,
-                        principalTable: "Buyers",
+                        name: "FK_AdsCategories_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -704,7 +719,6 @@ namespace ALUTAMARTAPI.Migrations
                     AdsId = table.Column<Guid>(type: "uuid", nullable: false),
                     VendorId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
-                    BuyerId = table.Column<Guid>(type: "uuid", nullable: true),
                     QuantityAdded = table.Column<int>(type: "integer", nullable: false),
                     PriceAtTimeOfAdd = table.Column<double>(type: "double precision", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -723,11 +737,6 @@ namespace ALUTAMARTAPI.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Carts_Buyers_BuyerId",
-                        column: x => x.BuyerId,
-                        principalTable: "Buyers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Carts_Profiles_ProfileId",
                         column: x => x.ProfileId,
                         principalTable: "Profiles",
@@ -735,6 +744,43 @@ namespace ALUTAMARTAPI.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Carts_Vendors_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Conversations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    VendorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AdsId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastMessageTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Conversations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Conversations_Ads_AdsId",
+                        column: x => x.AdsId,
+                        principalTable: "Ads",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Conversations_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Conversations_Vendors_VendorId",
                         column: x => x.VendorId,
                         principalTable: "Vendors",
                         principalColumn: "Id",
@@ -795,14 +841,54 @@ namespace ALUTAMARTAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Reports",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    AdminNote = table.Column<string>(type: "text", nullable: true),
+                    ReporterProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AdsId = table.Column<Guid>(type: "uuid", nullable: true),
+                    VendorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reports_Ads_AdsId",
+                        column: x => x.AdsId,
+                        principalTable: "Ads",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Reports_Profiles_ReporterProfileId",
+                        column: x => x.ReporterProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reports_Vendors_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendors",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Reviews",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Content = table.Column<string>(type: "text", nullable: true),
+                    Rating = table.Column<int>(type: "integer", nullable: false),
                     VendorId = table.Column<Guid>(type: "uuid", nullable: true),
                     AdsId = table.Column<Guid>(type: "uuid", nullable: true),
-                    BuyerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -818,9 +904,9 @@ namespace ALUTAMARTAPI.Migrations
                         principalTable: "Ads",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Reviews_Buyers_BuyerId",
-                        column: x => x.BuyerId,
-                        principalTable: "Buyers",
+                        name: "FK_Reviews_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -828,6 +914,69 @@ namespace ALUTAMARTAPI.Migrations
                         column: x => x.VendorId,
                         principalTable: "Vendors",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WishlistItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    WishlistId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AdsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WishlistItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WishlistItems_Ads_AdsId",
+                        column: x => x.AdsId,
+                        principalTable: "Ads",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WishlistItems_Wishlists_WishlistId",
+                        column: x => x.WishlistId,
+                        principalTable: "Wishlists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    ConversationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SenderProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsFromBuyer = table.Column<bool>(type: "boolean", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_Conversations_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "Conversations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Messages_Profiles_SenderProfileId",
+                        column: x => x.SenderProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -871,7 +1020,6 @@ namespace ALUTAMARTAPI.Migrations
                     PaymentInflowId = table.Column<Guid>(type: "uuid", nullable: true),
                     VendorId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
-                    BuyerId = table.Column<Guid>(type: "uuid", nullable: true),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Modified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -885,11 +1033,6 @@ namespace ALUTAMARTAPI.Migrations
                         name: "FK_PurchasedAds_Ads_AdsId",
                         column: x => x.AdsId,
                         principalTable: "Ads",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_PurchasedAds_Buyers_BuyerId",
-                        column: x => x.BuyerId,
-                        principalTable: "Buyers",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PurchasedAds_PaymentInflows_PaymentInflowId",
@@ -962,11 +1105,6 @@ namespace ALUTAMARTAPI.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ads_AdsCategoryId",
-                table: "Ads",
-                column: "AdsCategoryId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Ads_CurrencyId",
                 table: "Ads",
                 column: "CurrencyId");
@@ -977,14 +1115,14 @@ namespace ALUTAMARTAPI.Migrations
                 column: "VendorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AdsComments_AdsId",
-                table: "AdsComments",
+                name: "IX_AdsCategories_AdsId",
+                table: "AdsCategories",
                 column: "AdsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AdsComments_BuyerId",
-                table: "AdsComments",
-                column: "BuyerId");
+                name: "IX_AdsCategories_CategoryId",
+                table: "AdsCategories",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdsEngagements_AdsId",
@@ -1043,39 +1181,14 @@ namespace ALUTAMARTAPI.Migrations
             //     column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BuyerInterestedInstitutions_BuyerId",
-                table: "BuyerInterestedInstitutions",
-                column: "BuyerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BuyerInterestedInstitutions_InstitutionId",
-                table: "BuyerInterestedInstitutions",
-                column: "InstitutionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BuyerInterestedInstitutions_ProfileId",
-                table: "BuyerInterestedInstitutions",
-                column: "ProfileId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Buyers_InstitutionId",
-                table: "Buyers",
-                column: "InstitutionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Buyers_ProfileId",
-                table: "Buyers",
-                column: "ProfileId");
+                name: "IX_BankAccounts_CurrencyId",
+                table: "BankAccounts",
+                column: "CurrencyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_AdsId",
                 table: "Carts",
                 column: "AdsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Carts_BuyerId",
-                table: "Carts",
-                column: "BuyerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_ProfileId",
@@ -1088,9 +1201,34 @@ namespace ALUTAMARTAPI.Migrations
                 column: "VendorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Conversations_AdsId",
+                table: "Conversations",
+                column: "AdsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Conversations_ProfileId",
+                table: "Conversations",
+                column: "ProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Conversations_VendorId",
+                table: "Conversations",
+                column: "VendorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IdentityCards_ProfileId",
                 table: "IdentityCards",
                 column: "ProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_ConversationId",
+                table: "Messages",
+                column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_SenderProfileId",
+                table: "Messages",
+                column: "SenderProfileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PaymentInflows_AdsId",
@@ -1138,6 +1276,11 @@ namespace ALUTAMARTAPI.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Profiles_InstitutionId",
+                table: "Profiles",
+                column: "InstitutionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Profiles_Token",
                 table: "Profiles",
                 column: "Token");
@@ -1152,11 +1295,6 @@ namespace ALUTAMARTAPI.Migrations
                 name: "IX_PurchasedAds_AdsId",
                 table: "PurchasedAds",
                 column: "AdsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PurchasedAds_BuyerId",
-                table: "PurchasedAds",
-                column: "BuyerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PurchasedAds_PaymentInflowId",
@@ -1174,14 +1312,29 @@ namespace ALUTAMARTAPI.Migrations
                 column: "VendorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Reports_AdsId",
+                table: "Reports",
+                column: "AdsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_ReporterProfileId",
+                table: "Reports",
+                column: "ReporterProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_VendorId",
+                table: "Reports",
+                column: "VendorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reviews_AdsId",
                 table: "Reviews",
                 column: "AdsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_BuyerId",
+                name: "IX_Reviews_ProfileId",
                 table: "Reviews",
-                column: "BuyerId");
+                column: "ProfileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_VendorId",
@@ -1206,6 +1359,16 @@ namespace ALUTAMARTAPI.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_ProfileId",
                 table: "Transactions",
+                column: "ProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserInterestedInstitutions_InstitutionId",
+                table: "UserInterestedInstitutions",
+                column: "InstitutionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserInterestedInstitutions_ProfileId",
+                table: "UserInterestedInstitutions",
                 column: "ProfileId");
 
             migrationBuilder.CreateIndex(
@@ -1248,13 +1411,28 @@ namespace ALUTAMARTAPI.Migrations
                 name: "IX_Wallets_ProfileId",
                 table: "Wallets",
                 column: "ProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WishlistItems_AdsId",
+                table: "WishlistItems",
+                column: "AdsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WishlistItems_WishlistId",
+                table: "WishlistItems",
+                column: "WishlistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Wishlists_ProfileId",
+                table: "Wishlists",
+                column: "ProfileId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AdsComments");
+                name: "AdsCategories");
 
             migrationBuilder.DropTable(
                 name: "AdsEngagements");
@@ -1284,10 +1462,13 @@ namespace ALUTAMARTAPI.Migrations
             //     name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "BuyerInterestedInstitutions");
+                name: "BankAccounts");
 
             migrationBuilder.DropTable(
                 name: "Carts");
+
+            migrationBuilder.DropTable(
+                name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "ProcessorDataLogs");
@@ -1296,25 +1477,37 @@ namespace ALUTAMARTAPI.Migrations
                 name: "PurchasedAds");
 
             migrationBuilder.DropTable(
+                name: "Reports");
+
+            migrationBuilder.DropTable(
                 name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "SecurityQuestions");
 
             migrationBuilder.DropTable(
                 name: "Transactions");
 
             migrationBuilder.DropTable(
+                name: "UserInterestedInstitutions");
+
+            migrationBuilder.DropTable(
                 name: "VendorPlan");
 
             migrationBuilder.DropTable(
-                name: "WaitingUsers");
+                name: "Wallets");
 
             migrationBuilder.DropTable(
-                name: "Wallets");
+                name: "WishlistItems");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             // migrationBuilder.DropTable(
             //     name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Buyers");
+                name: "Conversations");
 
             migrationBuilder.DropTable(
                 name: "PaymentInflows");
@@ -1326,10 +1519,10 @@ namespace ALUTAMARTAPI.Migrations
                 name: "PlanTiers");
 
             migrationBuilder.DropTable(
-                name: "Ads");
+                name: "Wishlists");
 
             migrationBuilder.DropTable(
-                name: "AdsCategories");
+                name: "Ads");
 
             migrationBuilder.DropTable(
                 name: "Currencies");
@@ -1341,10 +1534,10 @@ namespace ALUTAMARTAPI.Migrations
                 name: "IdentityCards");
 
             migrationBuilder.DropTable(
-                name: "Institutions");
+                name: "Profiles");
 
             migrationBuilder.DropTable(
-                name: "Profiles");
+                name: "Institutions");
         }
     }
 }

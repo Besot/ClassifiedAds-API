@@ -22,7 +22,7 @@ namespace AlutaMartAPI.Controllers;
         public async Task<IActionResult> RemoveFromCart([FromBody] RemoveFromCartDTO model)
             => Ok(await cartService.RemoveFromCartAsync(model, CurrentUser));
 
-        [HttpDelete("DeleteCart/{cartId}"), AllowAccess(Roles.Buyer)]
+        [HttpDelete("DeleteCart/{cartId}"), BlockAccess(Roles.SuperAdmin)]
         [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
         public async Task<IActionResult> DeleteCart(Guid cartId)
             => Ok(await cartService.DeleteCartAsync(cartId, CurrentUser));

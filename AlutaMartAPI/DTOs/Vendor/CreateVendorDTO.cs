@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using AlutaMartAPI.Utilities;
 
 namespace AlutaMartAPI.DTOs;
     public class CreateVendorDTO

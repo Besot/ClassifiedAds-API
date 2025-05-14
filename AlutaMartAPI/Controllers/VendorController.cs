@@ -21,4 +21,24 @@ namespace AlutaMartAPI.Controllers;
         [HttpDelete("Delete/{profileId}"), AccessControl([Roles.AdminUser, Roles.SuperAdmin], AccessType.Allow)]
         [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
         public async Task<IActionResult> DeleteVendor(Guid profileId)  => Ok(await _vendorService.DeleteVendorAsync(profileId));
+
+        [HttpPost("Add-Bank-Account"), AllowAccess(Roles.Vendor)]
+        [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
+        public async Task<IActionResult> AddBankAccount([FromBody] CreateBankAccountDTO model)
+            => Ok(await _vendorService.AddBankAccountAsync(model, CurrentUser));
+
+        [HttpGet("Bank-Accounts"), AllowAccess(Roles.Vendor)]
+        [ProducesResponseType(type: typeof(ServiceResponse<GetBankAccountsDTO>), statusCode: 200)]
+        public async Task<IActionResult> GetExpertBankAccounts()
+            => Ok(await _vendorService.GetBankAccounts(CurrentUser));
+        
+        [HttpPost("Create-Transaction-PIN"), AllowAccess(Roles.Vendor)]
+        [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
+        public async Task<IActionResult> CreateTransactionPIN([FromBody] CreateTransactionPINDTO model)
+            => Ok(await _vendorService.CreateTransactionPINAsync(model, CurrentUser));
+            
+        [HttpPost("Add-Security-Question"), AllowAccess(Roles.Vendor)]
+        [ProducesResponseType(type: typeof(ServiceResponse<string>), statusCode: 200)]
+        public async Task<IActionResult> AddSecurityQuestion([FromBody] AddSecurityQuestionDTO model)
+            => Ok(await _vendorService.AddSecurityQuestionAsync(model, CurrentUser));
     }

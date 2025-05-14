@@ -15,6 +15,4 @@ public class PurchasedAd : BaseEntity
     public Guid ProfileId { get; set; }
     public virtual Profile Profile { get; set; }
 
-    public Guid? BuyerId { get; set; }
-    public virtual Buyer Buyer { get; set; }
 }

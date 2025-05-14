@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AlutaMartAPI.Controllers
@@ -34,7 +32,6 @@ namespace AlutaMartAPI.Controllers
         [ProducesResponseType(typeof(ServiceResponse<GetMessageDTO>), 200)]
         public async Task<IActionResult> SendMessage([FromBody] SendMessageDTO model)
         {
-            // Send the message using the service
             var result = await _messageService.SendMessageAsync(model, CurrentUser);
             
             // Skip SignalR notification if we don't have message data
@@ -57,11 +54,11 @@ namespace AlutaMartAPI.Controllers
                     if (latestConversation != null)
                     {
                         // Determine recipient based on user role
-                        var recipientId = CurrentUser.BuyerId.HasValue ?
-                            latestConversation.VendorId.ToString() : latestConversation.BuyerId.ToString();
+                        var recipientId = CurrentUser.Access == Roles.Buyer ?
+                            latestConversation.VendorId.ToString() : latestConversation.BuyerProfileId.ToString();
                         
                         // Notify recipient using SignalR
-                        await _hubContext.Clients.Group($"user_{recipientId}")
+                        await _hubContext.Clients.User($"user_{recipientId}")
                             .SendAsync("ReceiveMessage", result.Data);
                     }
                 }
@@ -74,10 +71,10 @@ namespace AlutaMartAPI.Controllers
                 // Only send the SignalR notification if we successfully retrieved the conversation
                 if (conversation != null && conversation.Data != null)
                 {
-                    var recipientId = CurrentUser.BuyerId.HasValue ?
-                        conversation.Data.VendorId.ToString() : conversation.Data.BuyerId.ToString();
+                    var recipientId = CurrentUser.Access == Roles.Buyer ?
+                        conversation.Data.VendorId.ToString() : conversation.Data.BuyerProfileId.ToString();
                     
-                    // Notify recipient using SignalR
+                    // Send to the recipient's user group
                     await _hubContext.Clients.Group($"user_{recipientId}")
                         .SendAsync("ReceiveMessage", result.Data);
                 }
@@ -123,11 +120,11 @@ namespace AlutaMartAPI.Controllers
                 if (conversation != null && conversation.Data != null)
                 {
                     // Determine the other participant
-                    var otherParticipantId = CurrentUser.BuyerId.HasValue ?
-                        conversation.Data.VendorId.ToString() : conversation.Data.BuyerId.ToString();
+                    var otherParticipantId = CurrentUser.Access == Roles.Buyer ?
+                        conversation.Data.VendorId.ToString() : conversation.Data.BuyerProfileId.ToString();
                     
                     // Notify through SignalR that messages have been read
-                    await _hubContext.Clients.Group($"user_{otherParticipantId}")
+                    await _hubContext.Clients.User($"user_{otherParticipantId}")
                         .SendAsync("MessagesRead", conversationId);
                 }
             }

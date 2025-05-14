@@ -26,8 +26,9 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
 		var profile = new UserDTO
 		{
 			Id = model.Id,
-			FirstName = model.FirstName,
-			LastName = model.LastName,
+			FirstName = model.FirstName.ToTitleCase(),
+			LastName = model.LastName.ToTitleCase(),
+			ProfilePicUrl = model.ProfilePictureUrl,
 			Email = model.Email,
 			Phone = model.PhoneNumber,
 			Access = model.Role,
@@ -56,24 +57,24 @@ public abstract class BaseDBService(IUnitOfWork unitOfWork, IResponseService res
             profile.VendorPlanTier = vendorData.PlanTierName;
         }
 		}
-		else if (model.Role == Roles.Buyer)
-		{
-			var buyerData = await _unitOfWork.Context.Buyers
-				.AsNoTracking()
-				.Where(x => x.ProfileId == model.Id)
-				.Select(x => new
-				{
-					BuyerId = x.Id,
-					ProfilePicUrl = x.Profile.ProfilePictureUrl
-				})
-				.FirstOrDefaultAsync();
+		// else if (model.Role == Roles.Buyer)
+		// {
+		// 	var buyerData = await _unitOfWork.Context.Profiles
+		// 		.AsNoTracking()
+		// 		.Where(x => x.Id == model.Id)
+		// 		.Select(x => new
+		// 		{
+		// 			BuyerId = x.Id,
+		// 			ProfilePicUrl = x.ProfilePictureUrl
+		// 		})
+		// 		.FirstOrDefaultAsync();
 
-			if (buyerData != null)
-			{
-				profile.ProfilePicUrl = buyerData.ProfilePicUrl;
-				profile.BuyerId = buyerData.BuyerId;
-			}
-		}
+		// 	if (buyerData != null)
+		// 	{
+		// 		profile.ProfilePicUrl = buyerData.ProfilePicUrl;
+		// 		profile.BuyerId = buyerData.BuyerId;
+		// 	}
+		// }
 
 
 		var claims = new List<Claim>

@@ -8,8 +8,7 @@ namespace AlutaMartAPI.DTOs
     {
         public string Content { get; set; }
         public Guid? ConversationId { get; set; }
-        public Guid? VendorId { get; set; }
-        public Guid? AdsId { get; set; }
+        public Guid? VendorId { get; set; } // This will be the recipient vendor's ID if initiating a new chat
     }
 
     public class GetMessageDTO
@@ -17,10 +16,10 @@ namespace AlutaMartAPI.DTOs
         public Guid Id { get; set; }
         public string Content { get; set; }
         public DateTimeOffset SentAt { get; set; }
-        public Guid SenderId { get; set; }
+        public Guid SenderProfileId { get; set; }
         public string SenderName { get; set; }
-        public bool IsFromBuyer { get; set; }
-        public string Status { get; set; }
+        public bool IsFromBuyer { get; set; } // True if sender is buyer, false if sender is vendor
+        public string Status { get; set; } // e.g., "sent", "delivered", "read"
     }
 
     public class GetConversationDTO
@@ -28,7 +27,7 @@ namespace AlutaMartAPI.DTOs
         public Guid Id { get; set; }
         public DateTimeOffset LastMessageTime { get; set; }
         
-        public Guid BuyerId { get; set; }
+        public Guid BuyerProfileId { get; set; }
         public string BuyerName { get; set; }
         public string BuyerImageUrl { get; set; }
         
@@ -36,7 +35,7 @@ namespace AlutaMartAPI.DTOs
         public string VendorName { get; set; }
         public string VendorImageUrl { get; set; }
         
-        public GetAdsDTO Ad { get; set; }
+        // The Ad property is removed as conversations are now strictly between buyer and vendor
         
         public List<GetMessageDTO> Messages { get; set; } = new List<GetMessageDTO>();
     }
@@ -47,7 +46,7 @@ namespace AlutaMartAPI.DTOs
         public DateTimeOffset LastMessageTime { get; set; }
         public string LastMessage { get; set; }
         
-        public Guid BuyerId { get; set; }
+        public Guid BuyerProfileId { get; set; }
         public string BuyerName { get; set; }
         public string BuyerImageUrl { get; set; }
         
@@ -55,8 +54,7 @@ namespace AlutaMartAPI.DTOs
         public string VendorName { get; set; }
         public string VendorImageUrl { get; set; }
         
-        public Guid? AdsId { get; set; }
-        public string AdsTitle { get; set; }
+        // AdsId and AdsTitle are removed as conversations are now strictly between buyer and vendor
         
         public int UnreadCount { get; set; }
     }

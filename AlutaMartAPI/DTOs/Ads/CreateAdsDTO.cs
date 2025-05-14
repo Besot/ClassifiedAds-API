@@ -22,7 +22,6 @@ namespace AlutaMartAPI.DTOs;
         [Range(1, 999999, ErrorMessage ="Ad quantity value should be between 1 and 999999")]
         public int QuantityInStock { get; set; }
 
-        public Guid? AdsCategoryId { get; set; }
         public Guid? CurrencyId { get; set; }
         public double? DiscountPrice { get; set; }
 
@@ -35,4 +34,6 @@ namespace AlutaMartAPI.DTOs;
 
         [Required(ErrorMessage ="Ad quantity is required")]
         public AdsCondition AdsCondition { get; set; }
+        public List<Guid> CategoryIds { get; set; }
+
     }
