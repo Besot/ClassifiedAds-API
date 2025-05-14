@@ -3,7 +3,7 @@ namespace AlutaMartAPI.SQLQueries;
     {
          public static string UpdateAd => @"UPDATE ""Ads"" set ""Title"" = @title, ""Description"" = @description, ""Price"" = @price,
                 ""DiscountPrice"" = @discountPrice, ""IsFeatured"" = @isFeatured, ""AdsType"" = @adsType, ""QuantityInStock"" = @quantityInStock,
-                ""AdsCondition"" = @adsCondition, ""AdsCategoryId"" = @adsCategoryId, ""CurrencyId"" = @currencyId, ""Discount"" = @discount
+                ""AdsCondition"" = @adsCondition, ""CurrencyId"" = @currencyId, ""Discount"" = @discount
             WHERE ""Id"" = @id";
 
         public static string DeleteAd => @"UPDATE ""Ads"" set ""Deleted"" = now(), ""IsDeleted"" = true  WHERE ""Id"" = @adId";
@@ -23,4 +23,7 @@ namespace AlutaMartAPI.SQLQueries;
          public static string UpdateAdEngagement => @"UPDATE ""AdsEngagements"" SET ""VisitCount"" = @VisitCount, 
                 ""IsPurchased"" = CASE WHEN @IsPurchased = true THEN true ELSE ""IsPurchased"" END 
                 WHERE ""AdId"" = @AdId AND ""ProfileId"" = @ProfileId";
+
+        public static string SoftDeleteOutdatedCategories => @"UPDATE ""AdsCategories"" set ""Deleted"" = now(), ""IsDeleted"" = true
+                WHERE ""AdsId"" = @adId AND ""CategoryId"" IN ({categoryIds})";
     }

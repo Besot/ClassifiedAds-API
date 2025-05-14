@@ -2,6 +2,7 @@ namespace AlutaMartAPI.Models;
     public class Review :BaseEntity
     {
         public string Content { get; set; }
+        public int Rating { get; set; }
         public Guid? VendorId { get; set; }
         public virtual Vendor Vendor { get; set; }
         public Guid? AdsId { get; set; }
