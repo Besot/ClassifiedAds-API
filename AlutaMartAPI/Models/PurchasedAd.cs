@@ -1,4 +1,3 @@
-using AlutaMartAPI.Services;
 
 namespace AlutaMartAPI.Models;
 

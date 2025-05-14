@@ -97,7 +97,6 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
             DiscountPrice = model.DiscountPrice,
             AdsType = model.AdsType,
             VendorId = user.VendorId.Value,
-            AdsCategoryId = model.AdsCategoryId.Value,
             CurrencyId = model.CurrencyId.Value,
             IsFeatured = model.IsFeatured,
             AdsCondition = model.AdsCondition,
@@ -115,6 +114,12 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
             ImageUrl = x,
             AdsId = ad.Id
         }));
+        var categories = model.CategoryIds.Select(x => new AdsCategory
+        {
+            AdsId = ad.Id,
+            CategoryId = x
+        }).ToList();
+        await _unitOfWork.Context.AdsCategories.AddRangeAsync(categories);
 
         await _unitOfWork.Context.AdsImages.AddRangeAsync(images);
         await _unitOfWork.CommitAsync();
@@ -141,16 +146,22 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
                 .Where(x => x.AdsId == x.Id)
                 .Select(x => x.ImageUrl)
                 .FirstOrDefault(),
-                Status = x.Status,
+                QuantityInStock = x.QuantityInStock,
+                Status = x.Status.Name(),
                 IsFeatured = x.IsFeatured,
                 AdsType = x.AdsType,
-                AdsCondition = x.AdsCondition,
+                AdsCondition = x.AdsCondition.Name(),
                 NumberOfReviews = x.NumberOfReviews,
                 VendorId = x.VendorId,
-                AdCategoryId = x.AdsCategoryId,
-                AdCategory = x.AdsCategory.Name,
+            
                 CurrencyId = x.CurrencyId,
-                Discount = x.Discount
+                Discount = x.Discount,
+                Categories =  _unitOfWork.Context.AdsCategories.
+                AsNoTracking()
+                .Where(x => x.AdsId == x.Id).Select(x => new CategoryDTO
+                {
+                    Name = x.Category.Name
+                }).ToList()
             });
         return await _responseService.PagedResponseAsync(ads, page, pageSize, "Ads");
     }
@@ -175,10 +186,14 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
                 .Select(x => x.ImageUrl)
                 .FirstOrDefault(),
                 IsFeatured = x.IsFeatured,
-                AdCategoryId = x.AdsCategoryId,
-                AdCategory = x.AdsCategory.Name,
                 CurrencyId = x.CurrencyId,
-                Discount = x.Discount
+                Discount = x.Discount,
+                Categories =  _unitOfWork.Context.AdsCategories.
+                AsNoTracking()
+                .Where(x => x.AdsId == x.Id).Select(x => new CategoryDTO
+                {
+                    Name = x.Category.Name
+                }).ToList(),
             });
         
         return await _responseService.PagedResponseAsync(ads, page, pageSize, "Ads");
@@ -210,10 +225,12 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
                 AdsCondition = x.AdsCondition,
                 NumberOfReviews = x.NumberOfReviews,
                 VendorId = x.VendorId,
-                AdCategoryId = x.AdsCategoryId,
-                AdCategory = x.AdsCategory.Name,
                 CurrencyId = x.CurrencyId,
-                Discount = x.Discount
+                Discount = x.Discount,
+                Categories =  _unitOfWork.Context.AdsCategories.AsNoTracking().Where(x => x.AdsId == adId).Select(x => new CategoryDTO
+                {
+                    Name = x.Category.Name
+                }).ToList()
             })
             .FirstOrDefaultAsync();
         
@@ -240,8 +257,74 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
     {
         var adsQuery = _unitOfWork.Context.Ads
             .AsNoTracking()
-            .OrderByDescending(x => x.Created)
             .Where(x => x.Status == AdsStatus.Active && x.QuantityInStock > 0)
+            .Include(x => x.Vendor)
+            .Select(x => new
+            {
+                Ad = x,
+                BrandName = x.Vendor.BrandName,
+                VendorImage = x.Vendor.VendorPictureUrl,
+                DiscountPrice = x.DiscountPrice ?? 0,
+                
+                AdsImageUrl = _unitOfWork.Context.AdsImages
+                    .AsNoTracking()
+                    .Where(img => img.AdsId == x.Id)
+                    .Select(img => img.ImageUrl)
+                    .FirstOrDefault(),
+                Categories =  _unitOfWork.Context.AdsCategories.AsNoTracking().Where(ac => ac.AdsId == x.Id).Select(x => new CategoryDTO
+                {
+                    Id = x.Category.Id,
+                    Name = x.Category.Name
+                }).ToList(),
+            });
+
+        if (isFree == true)
+        {
+            adsQuery = adsQuery.Where(x => x.Ad.Price == 0);
+        }
+        else if (isFree == false)
+        {
+            adsQuery = adsQuery.Where(x => x.Ad.Price > 0);
+        }
+
+        if (adsCategoryId.HasValue && adsCategoryId != Guid.Empty)
+        {
+            adsQuery = adsQuery.Where(x => x.Categories.Any(ac => ac.Id == adsCategoryId.Value));
+        }
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            adsQuery = adsQuery.Where(x =>
+                EF.Functions.ILike(x.Ad.Title, $"%{searchQuery}%") ||
+                EF.Functions.ILike(x.Ad.Description, $"%{searchQuery}%") ||
+                EF.Functions.ILike(x.BrandName, $"%{searchQuery}%"));
+        }
+
+        var results = adsQuery
+            .OrderByDescending(x => x.Ad.Created)
+            .Select(x => new GetAdsDTO
+            {
+                Id = x.Ad.Id,
+                Title = x.Ad.Title,
+                Description = x.Ad.Description,
+                BrandName = x.BrandName,
+                VendorImage = x.VendorImage,
+                Price = x.Ad.Price,
+                DiscountPrice = x.DiscountPrice,
+                AdsImageUrl = x.AdsImageUrl,
+                CurrencyId = x.Ad.CurrencyId,
+                Discount = x.Ad.Discount,
+                Categories = x.Categories,
+            });
+
+        return await _responseService.PagedResponseAsync(results, page, pageSize, "Ads");
+    }
+    
+    public async Task<ServiceResponse<PagedList<GetAdsDTO>>> GetFeaturedAdsAsync(int page = 1, int pageSize = 10)
+    {
+        var ads = _unitOfWork.Context.Ads
+            .AsNoTracking()
+            .Where(x => x.IsFeatured && x.Status == AdsStatus.Active)
             .Select(x => new GetAdsDTO
             {
                 Id = x.Id,
@@ -254,24 +337,19 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
                 AdsImageUrl = _unitOfWork.Context.AdsImages
                 .Where(x => x.AdsId == x.Id)
                 .Select(x => x.ImageUrl)
-                .FirstOrDefault(),                
-                AdCategoryId = x.AdsCategoryId,
-                AdCategory = x.AdsCategory.Name,
+                .FirstOrDefault(),
+                IsFeatured = x.IsFeatured,
                 CurrencyId = x.CurrencyId,
-                Discount = x.Discount
+                Discount = x.Discount,
+                Categories =  _unitOfWork.Context.AdsCategories.
+                AsNoTracking()
+                .Where(x => x.AdsId == x.Id).Select(x => new CategoryDTO
+                {
+                    Name = x.Category.Name
+                }).ToList(),
             });
-
-        if(isFree is not null && isFree.Value) adsQuery = adsQuery.Where(x => x.Price == 0);
         
-        if(isFree is not null && !isFree.Value) adsQuery = adsQuery.Where(x => x.Price > 0);
-        
-        adsQuery = adsCategoryId == Guid.Empty || adsCategoryId == null ? adsQuery : 
-            adsQuery.Where(x => x.AdCategoryId == adsCategoryId.Value);
-
-        adsQuery = string.IsNullOrEmpty(searchQuery) ? adsQuery :
-            adsQuery.Where(x => x.Title.Contains(searchQuery) || x.Description.Contains(searchQuery));
-
-        return await _responseService.PagedResponseAsync(adsQuery, page, pageSize, "Ads");
+        return await _responseService.PagedResponseAsync(ads, page, pageSize, "Ads");
     }
 
     public async Task<ServiceResponse<string>> UpdateAdAsync(Guid adId, CreateAdsDTO model, UserDTO user)
@@ -285,8 +363,8 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
        
         if(model.CurrencyId == Guid.Empty || !model.CurrencyId.HasValue) return _responseService.ErrorResponse<string>("currency type is required");
 
-        if(model.AdsCategoryId == Guid.Empty || !model.AdsCategoryId.HasValue) 
-            return _responseService.ErrorResponse<string>("Ad category is required");
+        if(model.CategoryIds == null || model.CategoryIds.Count == 0) 
+            return _responseService.ErrorResponse<string>("At least One Ad category is required");
 
         var adExists = await _unitOfWork.Context.Ads.AnyAsync(x => x.Id == adId);
         if(!adExists) return _responseService.ErrorResponse<string>("Invalid Ad");
@@ -309,7 +387,6 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
             new NpgsqlParameter("@isFeatured", model.IsFeatured),
             new NpgsqlParameter("@adsType", model.AdsType),
             new NpgsqlParameter("@adsCondition", model.AdsCondition),
-            new NpgsqlParameter("@adsCategoryId", model.AdsCategoryId),
             new NpgsqlParameter("@currencyId", model.CurrencyId),
             new NpgsqlParameter("@discount", discount)
 
@@ -353,7 +430,38 @@ public class AdsService(IGeocodingService geocodingService, IUnitOfWork _unitOfW
                 await _unitOfWork.Context.Database.ExecuteSqlRawAsync(deleteQuery, deleteParameters);
             }
 
-            await _unitOfWork.CommitAsync();
+            var existingCategories = await _unitOfWork.Context.AdsCategories
+            .AsNoTracking()
+            .Where(ac => ac.AdsId == adId && ac.IsDeleted != true)
+            .Select(ac => ac.CategoryId)
+            .ToListAsync();
+            
+            var newCategories = model.CategoryIds
+            .Where(id => !existingCategories.Contains(id))
+            .Select(id => new AdsCategory 
+            { 
+                AdsId           = adId, 
+                CategoryId      = id 
+            })
+            .ToList();
+        var categoriesToRemove = existingCategories.Where(ec => !model.CategoryIds.Contains(ec)).ToList();
+        if (categoriesToRemove.Count > 0)
+        {
+            var deleteParameters = new List<object>
+                {
+                    new NpgsqlParameter("@adId", adId)
+                };
+            deleteParameters.AddRange(categoriesToRemove.Select((id, index) => new NpgsqlParameter($"@id{index}", id)));
+            var deleteQuery = AdSQL.SoftDeleteOutdatedCategories
+            .Replace("{categoryIds}", string.Join(", ", categoriesToRemove.Select((_, index) => $"@id{index}")));
+            await _unitOfWork.Context.Database.ExecuteSqlRawAsync(deleteQuery, deleteParameters);
+        }
+        if (newCategories.Count != 0)
+        {
+            await _unitOfWork.Context.AdsCategories.AddRangeAsync(newCategories);
+        }
+        await _unitOfWork.CommitAsync();
+  
         return _responseService.SuccessResponse("Ad Updated Successfully");
     }
 
